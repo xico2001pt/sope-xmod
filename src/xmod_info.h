@@ -24,32 +24,46 @@ typedef struct {
 } XmodFlags;
 
 /**
- * *Description*
- * Returns 0 on success and -1 in case of error
+ * @brief Fills the given XmodInfo struct according to the given arguments
+ * 
+ * @param argc Number of arguments
+ * @param argv Arguments passed by the command
+ * @return int Returns 0 on success and -1 in case of error
  */
 int fillXmodInfo(XmodInfo * xi, int argc, char * argv[]);
 
 /**
- * *Description*
- * Returns 0 on success and -1 in case of error
+ * @brief Fills the given XmodFlags struct according to the given arguments
+ * 
+ * @param argc Number of arguments
+ * @param argv Arguments passed by the command
+ * @return int Returns 0 on success and -1 in case of error
  */
 int fillXmodFlags(XmodFlags * xf, int argc, char * argv[]);
 
 /**
- * Checks if the given mode is represented in octal
- * Returns true if the given mode is represented in octal or false otherwise.
+ * @brief Checks if the given mode is represented in octal
+ * 
+ * @param mode String with permissions
+ * @return bool Returns true if the given mode is represented in octal or false otherwise.
  */
 bool isOctal(char * mode);
 
 /**
- * Converts the given mode to octal mode and returns it through octalMode
- * Returns 0 on success and -1 in case of error
+ * @brief Converts the given mode to octal mode and returns it through octalMode
+ * 
+ * @param mode String with permissions
+ * @param octalMode Permission in octal
+ * @return int Returns 0 on success and -1 in case of error
  */
 int convertToOctal(char * mode, mode_t * octalMode);
 
 /**
- * Checks if the given modes are the same
- * Returns true if the given modes are the same or false otherwise.
+ * @brief Checks if the given modes are the same
+ * 
+ * @param mode1 Permissions in octal
+ * @param mode2 Permissions in octal
+ * @return bool Returns true if the given modes are the same or false otherwise.
  */
 bool compareModes(mode_t mode1, mode_t mode2);
 
