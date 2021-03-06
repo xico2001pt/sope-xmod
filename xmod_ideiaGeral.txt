@@ -1,0 +1,63 @@
+xmod [options] mode file
+          .      .     . ->diretorio ou file              
+          .      .
+           .     .
+//xmod_info.h
+struct xmod_info_t(){
+    //ver disc
+}
+//xmod_info.c
+    int fillXmodInfo()
+    {
+        
+        identifyMode(); ->convtere modo não octal em octal
+        identifyOptions();
+        
+    }
+    int compareMode(newmode, oldmode)
+    {
+
+    }
+
+
+//xmod.c
+ main(int agrc, char* argv)
+ {
+    Iniciar contagem de tempo;
+    if(argc > 4 || <= 5)
+        perror()
+
+    Verificar o modo pre-modificação;
+    Abrir ficheiro LogFilename
+
+    struct xmod_options_t options;
+
+    fillXmodInfo(int argc, char* argv, &options);
+
+    
+
+    if(ter_R)
+    {
+        //recursivo
+    }
+    compareMode(options->mode, old);
+
+    chmod(argv[argc-1], options->mode);
+    addEvent(Evento, char* argv);
+    writeOnCosole()
+    
+     
+ }
+
+//exemplo: (tirar modo antigo)
+int main(int argc, char* argv[]){
+    
+    struct stat status;
+    stat(argv[1], &status);
+
+    printf("%o",status.st_mode);
+
+    return 0;
+    
+
+}
