@@ -3,6 +3,6 @@
 
 #include "xmod_info.h"
 
-int changePermission(char * filename, XmodInfo * xmodInfo);
+int changePermission(XmodInfo * xmodInfo);
 
 #endif // CHANGE_H
