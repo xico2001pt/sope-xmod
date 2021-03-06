@@ -1,12 +1,16 @@
 #include "regfile.h"
 
+/**
+ * @brief LOG_FILENAME directory if it exists (NULL if it doesn't)
+ * 
+ */
+static char logFilename[MAX_ENV_VAR_SIZE];
 
+extern clock_t startClock;
 
-int updateStart(clock_t startTime) {
-    startClock = startTime;
-}
+int initLogFile();
 
-int setEvent();
+int registerEvent(clock_t registration_instant, pid_t pid);
 
 int eventProcCreat(int argc, char * argv[]);
 

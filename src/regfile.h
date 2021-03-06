@@ -3,26 +3,19 @@
 
 #include <sys/types.h>
 #include <sys/times.h>
+
 /**
- * @brief Constant about max size of te LOG_FILENAME
+ * @brief Constant about max size of the LOG_FILENAME
  * 
  */
 #define MAX_ENV_VAR_SIZE 128
 
-extern clock_t startClock;
-
 /**
- * @brief LOG_FILENAME directory if it exists (NULL if it doesn't)
- * 
- */
-static char logFilename[MAX_ENV_VAR_SIZE];
-
-/**
- * @brief Updates the starting clock variable
+ * @brief Initializes the log filename variable
  * 
  * @return int Returns 1 if it ends in error and 0 if it goes all right
  */
-int updateStart();
+int initLogFile();
 
 /**
  * @brief Function that register the starting info of any event(instant and pid)
