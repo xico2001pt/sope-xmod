@@ -3,13 +3,20 @@
 
 #include <sys/stat.h>
 #include <stdbool.h>
-
+/**
+ * @brief Struct with all the info about the xmod(configs, mode and file)
+ * 
+ */
 typedef struct {
     XmodFlags flags;
     mode_t mode;
     char * filename;
 } XmodInfo;
 
+/**
+ * @brief Struct with all info about the configs(-v,-c,-R)
+ * 
+ */
 typedef struct {
     bool recursive; // -R
     bool verbose;   // -v

@@ -1,9 +1,9 @@
 #include "regfile.h"
 
-static clock_t start;
+
 
 int updateStart(clock_t startTime) {
-    start = startTime;
+    startClock = startTime;
 }
 
 int setEvent();

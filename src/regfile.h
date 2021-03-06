@@ -3,23 +3,76 @@
 
 #include <sys/types.h>
 #include <sys/times.h>
-
+/**
+ * @brief Constant about max size of te LOG_FILENAME
+ * 
+ */
 #define MAX_ENV_VAR_SIZE 128
 
+extern clock_t startClock;
+
+/**
+ * @brief LOG_FILENAME directory if it exists (NULL if it doesn't)
+ * 
+ */
 static char logFilename[MAX_ENV_VAR_SIZE];
 
-int updateStart(clock_t startTime);
+/**
+ * @brief Updates the starting clock variable
+ * 
+ * @return int Returns 1 if it ends in error and 0 if it goes all right
+ */
+int updateStart();
 
-int registerEvent();
+/**
+ * @brief Function that register the starting info of any event(instant and pid)
+ * 
+ * @return int Returns 1 if it ends in error and 0 if it goes all right
+ */
+int registerEvent(clock_t registration_instant, pid_t pid);
 
+/**
+ * @brief Function that registers the Proccess creation event on the LOG_FILENAME
+ * 
+ * @param argc Number of arguments
+ * @param argv Arguments passed by the command
+ * @return int Returns 1 if it ends in error and 0 if it goes all right
+ */
 int eventProcCreat(int argc, char * argv[]);
 
+/**
+ * @brief Function that registers the end of a proccess on the LOG_FILENAME
+ * 
+ * @param exitStatus Registers if the proccess ended correctly or not
+ * @return int Returns 1 if it ends in error and 0 if it goes all right
+ */
 int eventProcExit(int exitStatus);
 
+/**
+ * @brief Function that registers the signal received by a proccess on the LOG_FILENAME
+ * 
+ * @param signo Sinal received
+ * @return int Returns 1 if it ends in error and 0 if it goes all right
+ */
 int eventSignalRecv(int signo);
 
+/**
+ * @brief Function that registers the signal sent by a proccess to the targetProcess
+ * 
+ * @param signo Signal that was sent
+ * @param targetPID The proccess target PID
+ * @return int Returns 1 if it ends in error and 0 if it goes all right
+ */
 int eventSignalSent(int signo, pid_t targetPID);
 
+/**
+ * @brief Function that registers the modification of the permissions of a file/dir
+ * 
+ * @param filename file/dir that was changed
+ * @param oldMode Old permissions in octal
+ * @param newMode New permissions in octal
+ * @return int Returns 1 if it ends in error and 0 if it goes all right
+ */
 int eventFileModf(char * filename, mode_t oldMode, mode_t newMode);
 
 #endif // REGFILE_H
