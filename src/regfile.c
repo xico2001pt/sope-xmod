@@ -1,6 +1,12 @@
 #include "regfile.h"
 
-int setEvent(event ev, info * in);
+static clock_t start;
+
+int updateStart(clock_t startTime) {
+    start = startTime;
+}
+
+int setEvent();
 
 int eventProcCreat(int argc, char * argv[]);
 
