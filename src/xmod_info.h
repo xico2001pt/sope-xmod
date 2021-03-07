@@ -45,9 +45,17 @@ int fillXmodFlags(XmodFlags * xf, int argc, char * argv[]);
  * @brief Checks if the given mode is represented in octal
  * 
  * @param mode String with permissions
- * @return bool Returns true if the given mode is represented in octal or false otherwise.
+ * @return int Returns 0 if the given mode is represented in octal, 1 if it is not
  */
-bool isOctal(char * mode);
+int isOctal(char * mode);
+
+/**
+ * @brief Checks if the given mode is the regular mode
+ * 
+ * @param mode String with permissions
+ * @return int If the string has the format "<u|g|o|a><+|-|=>[rmx]" returns 0 and if it does not have that format, returns 1
+ */
+int isRegularMode(char* mode);
 
 /**
  * @brief Converts the given mode to octal mode and returns it through octalMode
@@ -63,8 +71,8 @@ int convertToOctal(char * mode, mode_t * octalMode);
  * 
  * @param mode1 Permissions in octal
  * @param mode2 Permissions in octal
- * @return bool Returns true if the given modes are the same or false otherwise.
+ * @return bool Returns 0 if the given modes are the same or 1 otherwise.
  */
-bool compareModes(mode_t mode1, mode_t mode2);
+int compareModes(mode_t mode1, mode_t mode2);
 
 #endif // XMOD_INFO_H

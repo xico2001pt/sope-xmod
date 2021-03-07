@@ -2,7 +2,7 @@
 #define REGFILE_H
 
 #include <sys/types.h>
-#include <sys/times.h>
+#include <sys/time.h>
 
 /**
  * @brief Constant about max size of the LOG_FILENAME
