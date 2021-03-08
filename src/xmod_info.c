@@ -99,9 +99,9 @@ int checkRegularMode(char* mode){
 }
 
 mode_t convertToOctal(char * mode, char * filename) {
-    if (checkOctal(mode))  // String in octal mode
+    if (checkOctal(mode) == 0)  // String in octal mode
         return strtol(mode, NULL, 8);
-    else if (checkRegularMode(mode)) {  // String in regular mode
+    else if (checkRegularMode(mode) == 0) {  // String in regular mode
         // Initialize variable
         mode_t octalMode = 0;
 

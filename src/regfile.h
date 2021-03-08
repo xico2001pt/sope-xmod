@@ -4,11 +4,7 @@
 #include <sys/types.h>
 #include <sys/times.h>
 
-/**
- * @brief Constant about max size of the LOG_FILENAME
- * 
- */
-#define MAX_ENV_VAR_SIZE 128
+static clock_t startClock;
 
 /**
  * @brief Initializes the log filename variable

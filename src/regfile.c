@@ -15,7 +15,6 @@ static int logFile;
 
 extern clock_t startClock;
 
-
 int initLogFile(){
     
     char* logFilename = getenv("LOG_FILENAME");

@@ -6,7 +6,7 @@
 #include <stdio.h>
 #include <time.h>
 
-static clock_t startClock;
+extern clock_t startClock;
 
 int main(int argc, char * argv[]) {
 
