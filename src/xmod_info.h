@@ -3,15 +3,7 @@
 
 #include <sys/stat.h>
 #include <stdbool.h>
-/**
- * @brief Struct with all the info about the xmod(configs, mode and file)
- * 
- */
-typedef struct {
-    XmodFlags flags;
-    mode_t mode;
-    char * filename;
-} XmodInfo;
+
 
 /**
  * @brief Struct with all info about the configs(-v,-c,-R)
@@ -22,6 +14,18 @@ typedef struct {
     bool verbose;   // -v
     bool changes;   // -c
 } XmodFlags;
+
+/**
+ * @brief Struct with all the info about the xmod(configs, mode and file)
+ * 
+ */
+typedef struct {
+    XmodFlags flags;
+    mode_t mode;
+    char * filename;
+} XmodInfo;
+
+
 
 /**
  * @brief Fills the given XmodInfo struct according to the given arguments
@@ -61,10 +65,9 @@ int isRegularMode(char* mode);
  * @brief Converts the given mode to octal mode and returns it through octalMode
  * 
  * @param mode String with permissions
- * @param octalMode Permission in octal
- * @return int Returns 0 on success and -1 in case of error
+ * @return mode_t Returs the octal form of the mode
  */
-int convertToOctal(char * mode, mode_t * octalMode);
+mode_t convertToOctal(char * mode);
 
 /**
  * @brief Checks if the given modes are the same

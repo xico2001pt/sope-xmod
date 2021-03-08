@@ -1,5 +1,7 @@
 #include "xmod_info.h"
 #include <stdlib.h>
+#include <string.h>
+#include <stdio.h>
 
 
 int fillXmodInfo(XmodInfo * xi, int argc, char * argv[]) {
@@ -18,7 +20,7 @@ int isOctal(char * mode) {
         //Se a string tiver mais de 4 carateres, não é octal
         return 1;      
      }
-
+     
      //No octal, o primeiro carater é um 0
      if(mode[0] != '0')
      {
@@ -26,10 +28,8 @@ int isOctal(char * mode) {
      }
 
      //ir a cada um dos carateres e verificar se algum deles é maior que 7;
-     char* i;
-     for(i=mode; *i;i++)
-     {
-        if(atoi(i)>7){return 1;};
+     for(int i = 0; i<strlen(mode);i++){
+        if(mode[i]>'7'){return 1;}
      }
 
      //Se passa todos os testes, é considerado octal
@@ -38,8 +38,9 @@ int isOctal(char * mode) {
 }
 
 int isRegularMode(char* mode){
-    if(strlen(mode)<3 || strlen(mode)<=5){
+    if(strlen(mode)<3 || strlen(mode)>5){
     // se o tamanho da string for menor que 3 e maior que 5, não é regular
+        printf("Falhei no tamanho\n");
         return 1;
     }
 
@@ -49,7 +50,7 @@ int isRegularMode(char* mode){
         //Verifica se o segundo é
         if(mode[1]=='+'||mode[1]=='-'|| mode[1] == '=')
         {
-            char* chosen[2];
+            char chosen[3];
             int j=0;
             for(int i = 2; i <strlen(mode);i++){
                 //Vê se cada um é um r, w ou x
@@ -60,7 +61,7 @@ int isRegularMode(char* mode){
                         if(chosen[k]==mode[i]){return 1;}                   
                     }
                     //Se não encontrou nada, adiciona ao chosen para verificar depois
-                    chosen[j] == mode[i];
+                    chosen[j] = mode[i];
                     j++;
                 }
                 else{return 1;}
@@ -74,6 +75,8 @@ int isRegularMode(char* mode){
     else{return 1;}
 }
 
-int convertToOctal(char * mode, mode_t * octalMode) {}
+mode_t convertToOctal(char * mode) {
+    return strtol(mode, NULL, 8);
+}
 
 int compareModes(mode_t mode1, mode_t mode2) {}
