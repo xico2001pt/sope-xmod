@@ -75,6 +75,7 @@ int isRegularMode(char* mode){
     else{return 1;}
 }
 
+//Isto so dá se a string estiver em octal :)
 mode_t convertToOctal(char * mode) {
     return strtol(mode, NULL, 8);
 }
