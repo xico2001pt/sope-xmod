@@ -13,7 +13,7 @@
 /**
  * @brief Initializes the log filename variable
  * 
- * @return int Returns 1 if it ends in error and 0 if it goes all right
+ * @return int Returns -1 if it has an error on opening, 1 if it doesnt exist and 0 if it had no problems
  */
 int initLogFile();
 

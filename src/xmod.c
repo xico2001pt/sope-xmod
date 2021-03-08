@@ -7,6 +7,7 @@
 #include <time.h>
 
 static clock_t startClock;
+static int logFile;
 
 int main(int argc, char * argv[]) {
 

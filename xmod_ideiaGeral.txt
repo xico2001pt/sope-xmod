@@ -61,3 +61,39 @@ int main(int argc, char* argv[]){
     
 
 }
+
+    regist_new_event
+    //Buscar o valor de ticks por clock
+    long ticks =sysconf(_SC_CLK_TCK);
+    //Calcular o nº de clocks entre o start e o chamar da função
+    clock_t total_time = registration_instant - startClock;
+    double time = total_time/ticks;
+    
+
+    char s[10];
+
+    //convert total_time/ticks to string 
+    sprintf(s,"%4.2f",time);
+
+    //Escrever o instante
+    if(write(logFile, s, strlen(s))==-1){
+        //Error in write
+        return -1;
+    }
+    //adiciona o ponto e virgula
+    write(logFile, " ; ", 3);
+
+    char lindo[20];
+    //Transforma o pid em string para determinar o tamanho
+    sprintf(lindo,"%d",pid);
+
+    //Escrever o instante
+    if(write(logFile, lindo, strlen(lindo))==-1){
+        //Error in write
+        return -1;
+    }
+
+    //adiuciona o ponto e virgula
+    write(logFile, " ; ", 3);
+
+    return 0;
