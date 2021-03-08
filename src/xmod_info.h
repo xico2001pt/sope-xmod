@@ -32,7 +32,7 @@ typedef struct {
  * 
  * @param argc Number of arguments
  * @param argv Arguments passed by the command
- * @return int Returns 0 on success and -1 in case of error
+ * @return int Returns 0 on success and 1 in case of error
  */
 int fillXmodInfo(XmodInfo * xi, int argc, char * argv[]);
 
@@ -41,7 +41,7 @@ int fillXmodInfo(XmodInfo * xi, int argc, char * argv[]);
  * 
  * @param argc Number of arguments
  * @param argv Arguments passed by the command
- * @return int Returns 0 on success and -1 in case of error
+ * @return int Returns 0 on success and 1 in case of error
  */
 int fillXmodFlags(XmodFlags * xf, int argc, char * argv[]);
 
@@ -51,7 +51,7 @@ int fillXmodFlags(XmodFlags * xf, int argc, char * argv[]);
  * @param mode String with permissions
  * @return int Returns 0 if the given mode is represented in octal, 1 if it is not
  */
-int isOctal(char * mode);
+int checkOctal(char * mode);
 
 /**
  * @brief Checks if the given mode is the regular mode
@@ -59,15 +59,16 @@ int isOctal(char * mode);
  * @param mode String with permissions
  * @return int If the string has the format "<u|g|o|a><+|-|=>[rmx]" returns 0 and if it does not have that format, returns 1
  */
-int isRegularMode(char* mode);
+int checkRegularMode(char* mode);
 
 /**
- * @brief Converts the given mode to octal mode and returns it through octalMode
+ * @brief Converts the given string mode to octal mode
  * 
  * @param mode String with permissions
- * @return mode_t Returs the octal form of the mode
+ * @param filename String with path to the file
+ * @return mode_t Returs the octal form of the mode or -1 in case of error
  */
-mode_t convertToOctal(char * mode);
+mode_t convertToOctal(char * mode, char * filename);
 
 /**
  * @brief Checks if the given modes are the same

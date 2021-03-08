@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
+#include <sys/types.h>
 
 
 int fillXmodInfo(XmodInfo * xi, int argc, char * argv[]) {
@@ -11,10 +12,32 @@ int fillXmodInfo(XmodInfo * xi, int argc, char * argv[]) {
 }
 
 int fillXmodFlags(XmodFlags * xf, int argc, char * argv[]) {
-    // iterar argv
+    // Initialize struct
+    memset(xf, 0, sizeof(*xf));
+
+    // Iterate every flag
+    for (int i = 1; i < argc - 2; ++i) {
+        if (strcmp(argv[i], "-R") == 0) {
+            if (xf->recursive)
+                return 1;
+            xf->recursive = true;
+        }
+        else if (strcmp(argv[i], "-v") == 0) {
+            if (xf->verbose)
+                return 1;
+            xf->verbose = true;
+        }
+        else if (strcmp(argv[i], "-c") == 0) {
+            if (xf->changes)
+                return 1;
+            xf->changes = true;
+        }
+        else return 1;
+    }
+    return 0;
 }
 
-int isOctal(char * mode) {
+int checkOctal(char * mode) {
 
      if(strlen(mode)!=4){
         //Se a string tiver mais de 4 carateres, não é octal
@@ -37,7 +60,7 @@ int isOctal(char * mode) {
      
 }
 
-int isRegularMode(char* mode){
+int checkRegularMode(char* mode){
     if(strlen(mode)<3 || strlen(mode)>5){
     // se o tamanho da string for menor que 3 e maior que 5, não é regular
         printf("Falhei no tamanho\n");
@@ -75,9 +98,57 @@ int isRegularMode(char* mode){
     else{return 1;}
 }
 
-//Isto so dá se a string estiver em octal :)
-mode_t convertToOctal(char * mode) {
-    return strtol(mode, NULL, 8);
+mode_t convertToOctal(char * mode, char * filename) {
+    if (checkOctal(mode))  // String in octal mode
+        return strtol(mode, NULL, 8);
+    else if (checkRegularMode(mode)) {  // String in regular mode
+        // Initialize variable
+        mode_t octalMode = 0;
+
+        // Assemble given mode
+        for (int i = 2; i <strlen(mode);i++) {
+            if (mode[i] == 'r') {
+                if (mode[0] == 'u' || mode[0] == 'a')
+                    octalMode |= S_IRUSR;
+                else if (mode[0] == 'g' || mode[0] == 'a')
+                    octalMode |= S_IRGRP;
+                else if (mode[0] == 'o' || mode[0] == 'a')
+                    octalMode |= S_IROTH;
+            }
+            else if (mode[i] == 'w') {
+                if (mode[0] == 'u' || mode[0] == 'a')
+                    octalMode |= S_IWUSR;
+                else if (mode[0] == 'g' || mode[0] == 'a')
+                    octalMode |= S_IWGRP;
+                else if (mode[0] == 'o' || mode[0] == 'a')
+                    octalMode |= S_IWOTH;
+            }
+            else if (mode[i] == 'x') {
+                if (mode[0] == 'u' || mode[0] == 'a')
+                    octalMode |= S_IXUSR;
+                else if (mode[0] == 'g' || mode[0] == 'a')
+                    octalMode |= S_IXGRP;
+                else if (mode[0] == 'o' || mode[0] == 'a')
+                    octalMode |= S_IXOTH;
+            }
+        }
+
+        // If update symbol, then return octal mode
+        if (mode[1] == '=') return octalMode;
+
+        // Merge given permission with file permission
+        struct stat buf;
+        if (stat(filename, &buf) != 0) return -1;
+
+        if (mode[1] == '+') {
+            octalMode |= buf.st_mode;
+        }
+        else if (mode[1] == '-') {
+            octalMode = ~octalMode & buf.st_mode;
+        }
+        return octalMode;
+    }
+    else return -1;
 }
 
 int compareModes(mode_t mode1, mode_t mode2) {}
