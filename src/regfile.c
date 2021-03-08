@@ -4,14 +4,14 @@
 #include <stdlib.h>
 #include <string.h>
 #include <fcntl.h>
-#include <sys/times.h>
+#include <time.h>
 #include <string.h>
 
 /**
  * @brief LOG_FILENAME number if it exists, -1 if it doesnt
  * 
  */
-extern int logFile;
+static int logFile;
 
 extern clock_t startClock;
 
@@ -38,9 +38,31 @@ int initLogFile(){
 
 }
 
-int registerEvent(clock_t registration_instant, pid_t pid);
+int registerEvent() {
+    // Verify if the file exists
+    if (logFile == -1)
+        return 1;
+    
+    // Register instant
+    char instStr[10];
+    int inst = (int) (clock() - startClock) / sysconf(_SC_CLK_TCK);
+    sprintf(instStr, "%d ; ", inst);
+    write(logFile, instStr, 10);
+
+    // Register PID
+    char pidStr[10];
+    pid_t pid = getpid();
+    sprintf(pidStr, "%d; ", pid);
+    write(logFile, pidStr, 10);
+
+    return 0;
+}
 
 int eventProcCreat(int argc, char * argv[]){
+    // Verify if the file exists
+    if (registerEvent() == 1)
+        return 1;
+    
     //Apos inst; pid; fica inst; pid; event ;
     write(logFile, "PROC_CREAT",10);
     write(logFile, " ; ", 3);
@@ -63,6 +85,10 @@ int eventSignalRecv(int signo);
 int eventSignalSent(int signo, pid_t targetPID);
 
 int eventFileModf(char * filename, mode_t oldMode, mode_t newMode){
+    // Verify if the file exists
+    if (registerEvent() == 1)
+        return 1;
+    
     //Escrita do evento
     write(logFile, "FILE_MODF", 9);
     write(logFile, " ; ", 3);

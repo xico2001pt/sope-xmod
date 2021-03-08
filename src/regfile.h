@@ -2,7 +2,7 @@
 #define REGFILE_H
 
 #include <sys/types.h>
-#include <sys/time.h>
+#include <sys/times.h>
 
 /**
  * @brief Constant about max size of the LOG_FILENAME
@@ -22,7 +22,7 @@ int initLogFile();
  * 
  * @return int Returns 1 if it ends in error and 0 if it goes all right
  */
-int registerEvent(clock_t registration_instant, pid_t pid);
+int registerEvent();
 
 /**
  * @brief Function that registers the Proccess creation event on the LOG_FILENAME
