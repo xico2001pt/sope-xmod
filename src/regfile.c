@@ -43,16 +43,17 @@ int registerEvent() {
         return 1;
     
     // Register instant
+    struct tms t;
     char instStr[10];
-    int inst = (int) (clock() - startClock) / sysconf(_SC_CLK_TCK);
+    int inst = (times(&t) - startClock) * 1000 / sysconf(_SC_CLK_TCK);
     sprintf(instStr, "%d ; ", inst);
-    write(logFile, instStr, 10);
+    write(STDOUT_FILENO, instStr, strlen(instStr));
 
     // Register PID
     char pidStr[10];
     pid_t pid = getpid();
     sprintf(pidStr, "%d; ", pid);
-    write(logFile, pidStr, 10);
+    write(STDOUT_FILENO, pidStr, strlen(pidStr));
 
     return 0;
 }

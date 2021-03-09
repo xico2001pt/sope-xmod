@@ -9,8 +9,9 @@
 extern clock_t startClock;
 
 int main(int argc, char * argv[]) {
-
     //Start the clock:
-    startClock = clock();
+    struct tms t;
+    startClock = times(&t);
+
     return 0;
 }
