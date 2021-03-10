@@ -19,6 +19,8 @@ int fillXmodInfo(XmodInfo * xi, int argc, char * argv[]) {
     
     // Preencher filename;
     xi->filename = argv[argc-1];
+
+    return 0;
 }
 
 int fillXmodFlags(XmodFlags * xf, int argc, char * argv[]) {
