@@ -71,19 +71,7 @@ int checkOctal(char * mode) {
 }
 
 int checkRegularMode(char* mode){
-    if(strlen(mode)<3 || strlen(mode)>5){
-    // se o tamanho da string for menor que 3 e maior que 5, não é regular
-        printf("Falhei no tamanho\n");
-        return 1;
-    }
-
-    //Verifica se o primeiro carater é um u, g, o ou a
-    if(mode[0]=='u'||mode[0]=='g'||mode[0]=='o'||mode[0] == 'a')
-    {
-        //Verifica se o segundo é
-        if(mode[1]=='+'||mode[1]=='-'|| mode[1] == '=')
-        {
-            int checkRegularMode(char* mode){
+    
     if(strlen(mode)<3 || strlen(mode)>5){
     // se o tamanho da string for menor que 3 e maior que 5, não é regular
         printf("Falhei no tamanho\n");
@@ -127,15 +115,7 @@ int checkRegularMode(char* mode){
     }
     else{return 1;}
 }
-            }
-            //Passou por todas as exceções logo é considerado regular
-            return 0;
 
-        }
-        else{return 1;}
-    }
-    else{return 1;}
-}
 
 mode_t convertToOctal(char * mode, char * filename) {
     if (checkOctal(mode) == 0)  // String in octal mode
