@@ -2,6 +2,7 @@
 #include "regfile.h"
 #include <sys/types.h>
 #include <sys/stat.h>
+#include <stdio.h>
 
 int changePermission(XmodInfo * xmodInfo){
     struct stat st;

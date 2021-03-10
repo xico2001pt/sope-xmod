@@ -12,8 +12,11 @@ int main(int argc, char * argv[]) {
     //Start the clock:
     struct tms t;
     startClock = times(&t);
+    initLogFile();
+    eventProcCreat(argc, argv);
     XmodInfo xmodInfo;
     fillXmodInfo(&xmodInfo, argc, argv);
-    
+    changePermission(&xmodInfo);
+    eventProcExit(0);
     return 0;
 }
