@@ -78,7 +78,18 @@ int eventProcCreat(int argc, char * argv[]){
     return 0;
 }
 
-int eventProcExit(int exitStatus);
+int eventProcExit(int exitStatus){
+    // Verify if the file exists
+    if (registerEvent() == 1)
+        return 1;
+    
+    //Apos inst; pid; fica inst; pid; event ;
+    write(logFile, "PROC_EXIT", 9);
+    write(logFile, " ; ", 3);
+    write(logFile, exitStatus, sizeof(int));
+
+    return 0;
+}
 
 int eventSignalRecv(int signo);
 
