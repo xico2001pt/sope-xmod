@@ -83,21 +83,50 @@ int checkRegularMode(char* mode){
         //Verifica se o segundo é
         if(mode[1]=='+'||mode[1]=='-'|| mode[1] == '=')
         {
-            char chosen[3];
-            int j=0;
-            for(int i = 2; i <strlen(mode);i++){
-                //Vê se cada um é um r, w ou x
-                if(mode[i] == 'r'||mode[i] == 'w'||mode[i] == 'x')
-                {
-                    for(int k = 0; k<2; k++){
-                        //Verifica se já aquela letra já tinha sido utilizada (ex: impedir rrw)
-                        if(chosen[k]==mode[i]){return 1;}                   
-                    }
-                    //Se não encontrou nada, adiciona ao chosen para verificar depois
-                    chosen[j] = mode[i];
-                    j++;
+            int checkRegularMode(char* mode){
+    if(strlen(mode)<3 || strlen(mode)>5){
+    // se o tamanho da string for menor que 3 e maior que 5, não é regular
+        printf("Falhei no tamanho\n");
+        return 1;
+    }
+
+    //Verifica se o primeiro carater é um u, g, o ou a
+    if(mode[0]=='u'||mode[0]=='g'||mode[0]=='o'||mode[0] == 'a')
+    {
+        //Verifica se o segundo é
+        if(mode[1]=='+'||mode[1]=='-'|| mode[1] == '=')
+        {
+            switch (strlen(mode)-2){
+                case 1:
+                //No caso de ter apenas 1, se não for um nenhum deles retorna 1
+                if(mode[2] != 'r'&&mode[2] != 'w' && mode[2] != 'x'){return 1;}
+                break;
+
+                case 2:
+                //No caso de ter dois
+                //começar com r
+                if(mode[2]=='r'){
+                    if(mode[3]!='w'&&mode[3]!='x'){return 1;}
                 }
-                else{return 1;}
+                //começar com w
+                else if (mode[2]=='w' && mode[3]!='x'){return 1;}
+                //começar com nenhuim dos dois
+                else{ return 1;}
+                break;
+
+                case 3:
+                //No caso de ter os tres
+                if(mode[2]!='r'||mode[3]!='w'||mode[4]!='x'){return 1;}
+                break;
+            }
+            //Passou por todas as exceções logo é considerado regular
+            return 0;
+
+        }
+        else{return 1;}
+    }
+    else{return 1;}
+}
             }
             //Passou por todas as exceções logo é considerado regular
             return 0;
