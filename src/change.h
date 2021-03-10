@@ -10,4 +10,13 @@
  */
 int changePermission(XmodInfo * xmodInfo);
 
+/**
+ * @brief Changes the permissions from octal to the regular mode
+ * 
+ * @param mode Permissions in octal
+ * @param buf String that will be populated by the permissions in the regular mode
+ * @return int Returns 1 if not success and 0 if success
+ */
+int octalModeToString(mode_t mode, char *buf);
+
 #endif // CHANGE_H

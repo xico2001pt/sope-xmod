@@ -86,7 +86,11 @@ int eventProcExit(int exitStatus){
     //Apos inst; pid; fica inst; pid; event ;
     write(logFile, "PROC_EXIT", 9);
     write(logFile, " ; ", 3);
-    write(logFile, exitStatus, sizeof(int));
+
+    char status[] = {exitStatus + '0', '\0'};
+    write(logFile, status, 2);
+
+    write(logFile, "\n", 1);
 
     return 0;
 }
