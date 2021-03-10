@@ -6,7 +6,7 @@
  * @brief Changes the permission of the file/dir based on the new permissions
  * 
  * @param xmodInfo Struct containing all the info about permission changes
- * @return int Returns 1 if it is ends in error but 0 if it goes all right
+ * @return int Returns 1 if not success and 0 if success
  */
 int changePermission(XmodInfo * xmodInfo);
 

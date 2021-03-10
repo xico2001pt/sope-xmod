@@ -12,6 +12,8 @@ int main(int argc, char * argv[]) {
     //Start the clock:
     struct tms t;
     startClock = times(&t);
-
+    XmodInfo xmodInfo;
+    fillXmodInfo(&xmodInfo, argc, argv);
+    
     return 0;
 }
