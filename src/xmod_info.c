@@ -6,9 +6,19 @@
 
 
 int fillXmodInfo(XmodInfo * xi, int argc, char * argv[]) {
-    fillXmodFlags(&(xi->flags), argc, argv);  // Preencher options
+    // Preencher flags/options
+    fillXmodFlags(&(xi->flags), argc, argv);
+
     // Preencher modo
+    mode_t mode = convertToOctal(argv[argc-2], argv[argc-1]);
+    if (mode == -1) {
+        printf("fillXmodInfo: Invalid Mode Format\n");
+        return 1;
+    }
+    xi->mode = mode;
+    
     // Preencher filename;
+    xi->filename = argv[argc-1];
 }
 
 int fillXmodFlags(XmodFlags * xf, int argc, char * argv[]) {
@@ -61,6 +71,7 @@ int checkOctal(char * mode) {
 }
 
 int checkRegularMode(char* mode){
+    
     if(strlen(mode)<3 || strlen(mode)>5){
     // se o tamanho da string for menor que 3 e maior que 5, não é regular
         printf("Falhei no tamanho\n");
@@ -73,21 +84,28 @@ int checkRegularMode(char* mode){
         //Verifica se o segundo é
         if(mode[1]=='+'||mode[1]=='-'|| mode[1] == '=')
         {
-            char chosen[3];
-            int j=0;
-            for(int i = 2; i <strlen(mode);i++){
-                //Vê se cada um é um r, w ou x
-                if(mode[i] == 'r'||mode[i] == 'w'||mode[i] == 'x')
-                {
-                    for(int k = 0; k<2; k++){
-                        //Verifica se já aquela letra já tinha sido utilizada (ex: impedir rrw)
-                        if(chosen[k]==mode[i]){return 1;}                   
-                    }
-                    //Se não encontrou nada, adiciona ao chosen para verificar depois
-                    chosen[j] = mode[i];
-                    j++;
+            switch (strlen(mode)-2){
+                case 1:
+                //No caso de ter apenas 1, se não for um nenhum deles retorna 1
+                if(mode[2] != 'r'&&mode[2] != 'w' && mode[2] != 'x'){return 1;}
+                break;
+
+                case 2:
+                //No caso de ter dois
+                //começar com r
+                if(mode[2]=='r'){
+                    if(mode[3]!='w'&&mode[3]!='x'){return 1;}
                 }
-                else{return 1;}
+                //começar com w
+                else if (mode[2]=='w' && mode[3]!='x'){return 1;}
+                //começar com nenhuim dos dois
+                else{ return 1;}
+                break;
+
+                case 3:
+                //No caso de ter os tres
+                if(mode[2]!='r'||mode[3]!='w'||mode[4]!='x'){return 1;}
+                break;
             }
             //Passou por todas as exceções logo é considerado regular
             return 0;
@@ -97,6 +115,7 @@ int checkRegularMode(char* mode){
     }
     else{return 1;}
 }
+
 
 mode_t convertToOctal(char * mode, char * filename) {
     if (checkOctal(mode) == 0)  // String in octal mode
@@ -109,27 +128,27 @@ mode_t convertToOctal(char * mode, char * filename) {
         for (int i = 2; i <strlen(mode);i++) {
             if (mode[i] == 'r') {
                 if (mode[0] == 'u' || mode[0] == 'a')
-                    octalMode |= S_IRUSR;
+                    octalMode |= S_IRUSR;   // Read permission for user
                 else if (mode[0] == 'g' || mode[0] == 'a')
-                    octalMode |= S_IRGRP;
+                    octalMode |= S_IRGRP;   // Read permission for user group
                 else if (mode[0] == 'o' || mode[0] == 'a')
-                    octalMode |= S_IROTH;
+                    octalMode |= S_IROTH;   // Read permission for other users
             }
             else if (mode[i] == 'w') {
                 if (mode[0] == 'u' || mode[0] == 'a')
-                    octalMode |= S_IWUSR;
+                    octalMode |= S_IWUSR;   // Write permission for user
                 else if (mode[0] == 'g' || mode[0] == 'a')
-                    octalMode |= S_IWGRP;
+                    octalMode |= S_IWGRP;   // Write permission for user group
                 else if (mode[0] == 'o' || mode[0] == 'a')
-                    octalMode |= S_IWOTH;
+                    octalMode |= S_IWOTH;   // Write permission for other users
             }
             else if (mode[i] == 'x') {
                 if (mode[0] == 'u' || mode[0] == 'a')
-                    octalMode |= S_IXUSR;
+                    octalMode |= S_IXUSR;   // Execution permission for user
                 else if (mode[0] == 'g' || mode[0] == 'a')
-                    octalMode |= S_IXGRP;
+                    octalMode |= S_IXGRP;   // Execution permission for group
                 else if (mode[0] == 'o' || mode[0] == 'a')
-                    octalMode |= S_IXOTH;
+                    octalMode |= S_IXOTH;   // Execution permission for other users
             }
         }
 
@@ -150,5 +169,3 @@ mode_t convertToOctal(char * mode, char * filename) {
     }
     else return -1;
 }
-
-int compareModes(mode_t mode1, mode_t mode2) {}
