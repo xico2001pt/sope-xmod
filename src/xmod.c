@@ -9,19 +9,14 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 
-extern clock_t startClock;
-
 int main(int argc, char * argv[]) {
-    //Start the clock:
-    struct tms t;
-    startClock = times(&t);
+    initLogFile();
     if (argc < 3 || argc > 6) {
         printf("usage: xmod [options] mode file/dir\n");
         return 1;
     }
     if (open(argv[argc - 1], O_RDONLY)  < 0)
         printf("xmod: cannot access '%s' : No such file or directory\nfailed to change mode of '%s' from 0000 (---------) to 0000 (---------)\n", argv[argc-1], argv[argc-1]);
-    initLogFile();
     eventProcCreat(argc, argv);
     XmodInfo xmodInfo;
     fillXmodInfo(&xmodInfo, argc, argv);

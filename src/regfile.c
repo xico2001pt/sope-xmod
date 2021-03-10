@@ -13,14 +13,17 @@
  */
 static int logFile;
 
-extern clock_t startClock;
+static clock_t startClock;
 
 int initLogFile(){
+    struct tms t;
+    startClock = times(&t);
     
     char* logFilename = getenv("LOG_FILENAME");
     
     if(logFilename==NULL){
         //Não existe path para o logFilename
+        logFile = -1;
         return 1;
     }
     else{

@@ -4,8 +4,6 @@
 #include <sys/types.h>
 #include <sys/times.h>
 
-static clock_t startClock;
-
 /**
  * @brief Initializes the log filename variable
  * 
