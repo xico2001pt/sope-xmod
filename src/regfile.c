@@ -47,13 +47,13 @@ int registerEvent() {
     char instStr[10];
     int inst = (times(&t) - startClock) * 1000 / sysconf(_SC_CLK_TCK);
     sprintf(instStr, "%d ; ", inst);
-    write(STDOUT_FILENO, instStr, strlen(instStr));
+    write(logFile, instStr, strlen(instStr));
 
     // Register PID
     char pidStr[10];
     pid_t pid = getpid();
     sprintf(pidStr, "%d; ", pid);
-    write(STDOUT_FILENO, pidStr, strlen(pidStr));
+    write(logFile, pidStr, strlen(pidStr));
 
     return 0;
 }
@@ -84,13 +84,11 @@ int eventProcExit(int exitStatus){
         return 1;
     
     //Apos inst; pid; fica inst; pid; event ;
+    char exitStr[10];
     write(logFile, "PROC_EXIT", 9);
     write(logFile, " ; ", 3);
-
-    char status[] = {exitStatus + '0', '\0'};
-    write(logFile, status, 2);
-
-    write(logFile, "\n", 1);
+    sprintf(exitStr, "%d\n", exitStatus);
+    write(logFile, exitStr, strlen(exitStr));
 
     return 0;
 }
@@ -115,11 +113,11 @@ int eventFileModf(char * filename, mode_t oldMode, mode_t newMode){
     //Escrita do oldMode
     char oldmode[10];
     sprintf(oldmode, "%#o : ", oldMode);
-    write(logFile, oldmode, 7);
+    write(logFile, oldmode, strlen(oldmode));
 
     char newmode[10];
     sprintf(newmode, "%#o\n", newMode);
-    write(logFile, newmode, 5);
+    write(logFile, newmode, strlen(newmode));
 
     return 0;
 

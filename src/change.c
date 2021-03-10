@@ -24,7 +24,7 @@ int changePermission(XmodInfo * xmodInfo){
     octalModeToString(st.st_mode, oldMode);
     octalModeToString(xmodInfo->mode, newMode);
     if (xmodInfo->flags.changes || xmodInfo->flags.verbose)
-        printf("mode of '%s' changed from %#o (%s) to %#o (%s)/n", xmodInfo->filename, st.st_mode, oldMode, xmodInfo->mode, newMode);
+        printf("mode of '%s' changed from %#o (%s) to %#o (%s)\n", xmodInfo->filename, st.st_mode, oldMode, xmodInfo->mode, newMode);
     
     return 0;
 }
