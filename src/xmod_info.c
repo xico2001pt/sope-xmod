@@ -6,9 +6,19 @@
 
 
 int fillXmodInfo(XmodInfo * xi, int argc, char * argv[]) {
-    fillXmodFlags(&(xi->flags), argc, argv);  // Preencher options
+    // Preencher flags/options
+    fillXmodFlags(&(xi->flags), argc, argv);
+
     // Preencher modo
+    mode_t mode = convertToOctal(argv[argc-2], argv[argc-1]);
+    if (mode == -1) {
+        printf("fillXmodInfo: Invalid Mode Format\n");
+        return 1;
+    }
+    xi->mode = mode;
+    
     // Preencher filename;
+    xi->filename = argv[argc-1];
 }
 
 int fillXmodFlags(XmodFlags * xf, int argc, char * argv[]) {
@@ -109,27 +119,27 @@ mode_t convertToOctal(char * mode, char * filename) {
         for (int i = 2; i <strlen(mode);i++) {
             if (mode[i] == 'r') {
                 if (mode[0] == 'u' || mode[0] == 'a')
-                    octalMode |= S_IRUSR;
+                    octalMode |= S_IRUSR;   // Read permission for user
                 else if (mode[0] == 'g' || mode[0] == 'a')
-                    octalMode |= S_IRGRP;
+                    octalMode |= S_IRGRP;   // Read permission for user group
                 else if (mode[0] == 'o' || mode[0] == 'a')
-                    octalMode |= S_IROTH;
+                    octalMode |= S_IROTH;   // Read permission for other users
             }
             else if (mode[i] == 'w') {
                 if (mode[0] == 'u' || mode[0] == 'a')
-                    octalMode |= S_IWUSR;
+                    octalMode |= S_IWUSR;   // Write permission for user
                 else if (mode[0] == 'g' || mode[0] == 'a')
-                    octalMode |= S_IWGRP;
+                    octalMode |= S_IWGRP;   // Write permission for user group
                 else if (mode[0] == 'o' || mode[0] == 'a')
-                    octalMode |= S_IWOTH;
+                    octalMode |= S_IWOTH;   // Write permission for other users
             }
             else if (mode[i] == 'x') {
                 if (mode[0] == 'u' || mode[0] == 'a')
-                    octalMode |= S_IXUSR;
+                    octalMode |= S_IXUSR;   // Execution permission for user
                 else if (mode[0] == 'g' || mode[0] == 'a')
-                    octalMode |= S_IXGRP;
+                    octalMode |= S_IXGRP;   // Execution permission for group
                 else if (mode[0] == 'o' || mode[0] == 'a')
-                    octalMode |= S_IXOTH;
+                    octalMode |= S_IXOTH;   // Execution permission for other users
             }
         }
 
@@ -150,5 +160,3 @@ mode_t convertToOctal(char * mode, char * filename) {
     }
     else return -1;
 }
-
-int compareModes(mode_t mode1, mode_t mode2) {}
