@@ -10,24 +10,20 @@
 #include <fcntl.h>
 
 int main(int argc, char * argv[]) {
-    initLogFile();
-    XmodInfo xmodInfo;
-    if (argc < 3 || argc > 6) {
+    initLogFile();  // Initialize log file and related information
+    eventProcCreat(argc, argv);  // Register process creation event
+
+    // Check if number of console arguments is valid
+    if (argc < MIN_NUM_ARGS || argc > MAX_NUM_ARGS) {
         printf("usage: xmod [options] mode file/dir\n");
-        return 1;
+        EXIT(1);
     }
 
-    //Chekcs if the file exists
-    if(checkFileStatus(argv[argc-1],&xmodInfo)==-1){
-        printf("xmod: cannot access '%s' : No such file or directory\nfailed to change mode of '%s' from 0000 (---------) to 0000 (---------)\n", argv[argc-1], argv[argc-1]);
-        exit(1);
-    }
-    eventProcCreat(argc, argv);
-    
-    fillXmodInfo(&xmodInfo, argc, argv);
-    changePermission(&xmodInfo);
-    eventProcExit(0);
-    endLogFile();
+    // Fill xmod information
+    XmodInfo xmodInfo;
+    if (fillXmodInfo(&xmodInfo, argc, argv) != 0) EXIT(1);
 
-    return 0;
+    if (changePermission(&xmodInfo) != 0) EXIT(2);
+
+    EXIT(0);
 }

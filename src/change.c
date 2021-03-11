@@ -5,31 +5,29 @@
 #include <stdio.h>
 #include <string.h>
 
-int changePermission(XmodInfo * xmodInfo){
-    struct stat st;
+int changePermission(XmodInfo * xmodInfo) {
+    // Convert octal permissions to string
+    char oldMode[10], newMode[10];
+    octalModeToString(xmodInfo->oldMode, oldMode);
+    octalModeToString(xmodInfo->mode, newMode);
 
-    // Verify if the file exists
-    if (stat(xmodInfo->filename, &st) != 0)
-        return 1;
-    
     // Changing permissions
-    if (chmod(xmodInfo->filename, xmodInfo->mode) != 0)
+    if (chmod(xmodInfo->filename, xmodInfo->mode) != 0) {
+        printf("failed to change mode of '%s' from %#o (%s) to %#o (%s)\n", xmodInfo->filename, xmodInfo->oldMode, oldMode, xmodInfo->mode, newMode);
         return 1;
+    }
     
     // Register event
-    eventFileModf(xmodInfo->filename, st.st_mode, xmodInfo->mode);
+    eventFileModf(xmodInfo->filename, xmodInfo->oldMode, xmodInfo->mode);
 
     // Writing in the console the changes that took effect
-    char oldMode[10], newMode[10];
-    octalModeToString(st.st_mode, oldMode);
-    octalModeToString(xmodInfo->mode, newMode);
     if (xmodInfo->flags.changes || xmodInfo->flags.verbose)
-        printf("mode of '%s' changed from %#o (%s) to %#o (%s)\n", xmodInfo->filename, st.st_mode, oldMode, xmodInfo->mode, newMode);
+        printf("mode of '%s' changed from %#o (%s) to %#o (%s)\n", xmodInfo->filename, xmodInfo->oldMode, oldMode, xmodInfo->mode, newMode);
     
     return 0;
 }
 
-int octalModeToString(mode_t mode, char *buf){
+int octalModeToString(mode_t mode, char *buf) {
     // Check if space was allocated
     if (buf == NULL) return 1;
 

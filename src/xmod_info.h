@@ -4,6 +4,8 @@
 #include <sys/stat.h>
 #include <stdbool.h>
 
+#define MIN_NUM_ARGS 3  // Minimum number of console arguments
+#define MAX_NUM_ARGS 6  // Maximum number of console arguments
 
 /**
  * @brief Struct with all info about the configs(-v,-c,-R)
@@ -21,12 +23,10 @@ typedef struct {
  */
 typedef struct {
     XmodFlags flags;
-    mode_t old_mode;
+    mode_t oldMode;
     mode_t mode;
     char * filename;
 } XmodInfo;
-
-
 
 /**
  * @brief Fills the given XmodInfo struct according to the given arguments
@@ -51,7 +51,7 @@ int fillXmodFlags(XmodFlags * xf, int argc, char * argv[]);
  * 
  * @param filename The filename of the file/dir we want to change permissions
  * @param xf XmodInfo struct
- * @return int Returns 0 if it ends with no problems and -1 if the file does not exist
+ * @return int Returns 0 if it ends with no problems and 1 if the file does not exist
  */
 int checkFileStatus(char* filename, XmodInfo * xf);
 
@@ -76,9 +76,10 @@ int checkRegularMode(char* mode);
  * 
  * @param mode String with permissions
  * @param filename String with path to the file
+ * @param oldMode Old permissions of the file in octal
  * @return mode_t Returs the octal form of the mode or -1 in case of error
  */
-mode_t convertToOctal(char * mode, char * filename);
+mode_t convertToOctal(char * mode, char * filename, mode_t oldMode);
 
 /**
  * @brief Checks if the given modes are the same
@@ -88,7 +89,5 @@ mode_t convertToOctal(char * mode, char * filename);
  * @return bool Returns 0 if the given modes are the same or 1 otherwise.
  */
 int compareModes(mode_t mode1, mode_t mode2);
-
-
 
 #endif // XMOD_INFO_H

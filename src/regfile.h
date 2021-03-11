@@ -4,6 +4,8 @@
 #include <sys/types.h>
 #include <sys/times.h>
 
+#define EXIT(exitStatus) ({eventProcExit(exitStatus); endLogFile(); return exitStatus;})  // Register process termination and return
+
 /**
  * @brief Initializes the log filename variable
  * 

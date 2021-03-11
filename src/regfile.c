@@ -15,31 +15,23 @@ static int logFile;
 
 static clock_t startClock;
 
-int initLogFile(){
+int initLogFile() {
     struct tms t;
     startClock = times(&t);
     
     char* logFilename = getenv("LOG_FILENAME");
     
-    
-    if(logFilename==NULL){
-        //Não existe path para o logFilename
-        printf("%s\n", logFilename);
+    if (logFilename == NULL) {  // The path to the filename doesn't exist
         logFile = -1;
         return 1;
     }
-    else{
-        //Flags -> Escrever apenas, cria ficheiro se não existir e volta a 0 se já existir
-        //Modo de permissão -> Ler para todos os utilizadores
+    else {
+        // Flags -> Write only, create file if doesn't exist and truncate if it does
+        // Permissions -> Read and write for all users
         logFile = open(logFilename, O_WRONLY|O_CREAT|O_TRUNC, S_IRGRP|S_IRUSR|S_IROTH|S_IWGRP|S_IWOTH|S_IWUSR);
-        if(logFile==-1){
-            //Erro em abrir o ficheiro
-            return -1;
-        }
-        //Nenhum erro em abrir o ficheiro
-        return 0;
+        if(logFile == -1) return -1;  // Error opening the file
     }
-
+    return 0;
 }
 
 int registerEvent() {
@@ -63,35 +55,36 @@ int registerEvent() {
     return 0;
 }
 
-int eventProcCreat(int argc, char * argv[]){
+int eventProcCreat(int argc, char * argv[]) {
     // Verify if the file exists
     if (registerEvent() == 1)
         return 1;
     
-    //Apos inst; pid; fica inst; pid; event ;
+    // After inst; pid; write event ;
     write(logFile, "PROC_CREAT",10);
     write(logFile, " ; ", 3);
 
-    //Apos inst ; pid ; event ; fica inst ; pid ; event ; arg[1] arg[2] arg[3]\n 
-    for(int i = 0; i<argc; i++){
+    // After inst ; pid ; event ; write arg[1] arg[2] arg[3]
+    for (int i = 0; i < argc; i++) {
         write(logFile, argv[i], strlen(argv[i]));
         write(logFile, " ", 1);
     }
-    
     write(logFile, "\n", 1);
 
     return 0;
 }
 
-int eventProcExit(int exitStatus){
+int eventProcExit(int exitStatus) {
     // Verify if the file exists
     if (registerEvent() == 1)
         return 1;
     
-    //Apos inst; pid; fica inst; pid; event ;
-    char exitStr[10];
+    // After inst; pid; write event ;
     write(logFile, "PROC_EXIT", 9);
     write(logFile, " ; ", 3);
+
+    // Write exit status
+    char exitStr[10];
     sprintf(exitStr, "%d\n", exitStatus);
     write(logFile, exitStr, strlen(exitStr));
 
@@ -102,38 +95,37 @@ int eventSignalRecv(int signo);
 
 int eventSignalSent(int signo, pid_t targetPID);
 
-int eventFileModf(char * filename, mode_t oldMode, mode_t newMode){
+int eventFileModf(char * filename, mode_t oldMode, mode_t newMode) {
     // Verify if the file exists
     if (registerEvent() == 1)
         return 1;
     
-    //Escrita do evento
+    // Write event
     write(logFile, "FILE_MODF", 9);
     write(logFile, " ; ", 3);
 
-    //Escrita do ficheiro
+    // Write filename
     write(logFile, filename, strlen(filename));
     write(logFile, " : ", 3);
 
-    //Escrita do oldMode
+    // Write oldMode
     char oldmode[10];
     sprintf(oldmode, "%#o : ", oldMode);
     write(logFile, oldmode, strlen(oldmode));
 
+    // Write newMode
     char newmode[10];
     sprintf(newmode, "%#o\n", newMode);
     write(logFile, newmode, strlen(newmode));
 
     return 0;
-
 }
 
 
-int endLogFile(){
-    if(logFile==-1){
-        printf("Log_File does not exist!\n");
-        return 0;
-    }
+int endLogFile() {
+    // Verify if the file exists
+    if(logFile == -1)
+        return 1;
 
     close(logFile);
     return 0;
