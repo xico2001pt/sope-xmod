@@ -131,25 +131,25 @@ mode_t convertToOctal(char * mode, char * filename) {
             if (mode[i] == 'r') {
                 if (mode[0] == 'u' || mode[0] == 'a')
                     octalMode |= S_IRUSR;   // Read permission for user
-                else if (mode[0] == 'g' || mode[0] == 'a')
+                if (mode[0] == 'g' || mode[0] == 'a')
                     octalMode |= S_IRGRP;   // Read permission for user group
-                else if (mode[0] == 'o' || mode[0] == 'a')
+                if (mode[0] == 'o' || mode[0] == 'a')
                     octalMode |= S_IROTH;   // Read permission for other users
             }
             else if (mode[i] == 'w') {
                 if (mode[0] == 'u' || mode[0] == 'a')
                     octalMode |= S_IWUSR;   // Write permission for user
-                else if (mode[0] == 'g' || mode[0] == 'a')
+                if (mode[0] == 'g' || mode[0] == 'a')
                     octalMode |= S_IWGRP;   // Write permission for user group
-                else if (mode[0] == 'o' || mode[0] == 'a')
+                if (mode[0] == 'o' || mode[0] == 'a')
                     octalMode |= S_IWOTH;   // Write permission for other users
             }
             else if (mode[i] == 'x') {
                 if (mode[0] == 'u' || mode[0] == 'a')
                     octalMode |= S_IXUSR;   // Execution permission for user
-                else if (mode[0] == 'g' || mode[0] == 'a')
+                if (mode[0] == 'g' || mode[0] == 'a')
                     octalMode |= S_IXGRP;   // Execution permission for group
-                else if (mode[0] == 'o' || mode[0] == 'a')
+                if (mode[0] == 'o' || mode[0] == 'a')
                     octalMode |= S_IXOTH;   // Execution permission for other users
             }
         }
