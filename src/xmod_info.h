@@ -21,6 +21,7 @@ typedef struct {
  */
 typedef struct {
     XmodFlags flags;
+    mode_t old_mode;
     mode_t mode;
     char * filename;
 } XmodInfo;
@@ -44,6 +45,15 @@ int fillXmodInfo(XmodInfo * xi, int argc, char * argv[]);
  * @return int Returns 0 on success and 1 in case of error
  */
 int fillXmodFlags(XmodFlags * xf, int argc, char * argv[]);
+
+/**
+ * @brief Checks if the file exists and writes the old permissions mode in the XmodInfo struct and the filename
+ * 
+ * @param filename The filename of the file/dir we want to change permissions
+ * @param xf XmodInfo struct
+ * @return int Returns 0 if it ends with no problems and -1 if the file does not exist
+ */
+int checkFileStatus(char* filename, XmodInfo * xf);
 
 /**
  * @brief Checks if the given mode is represented in octal
@@ -78,5 +88,7 @@ mode_t convertToOctal(char * mode, char * filename);
  * @return bool Returns 0 if the given modes are the same or 1 otherwise.
  */
 int compareModes(mode_t mode1, mode_t mode2);
+
+
 
 #endif // XMOD_INFO_H

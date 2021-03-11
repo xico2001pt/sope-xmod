@@ -36,7 +36,7 @@ int octalModeToString(mode_t mode, char *buf){
     strcpy(buf, "rwxrwxrwx");
 
     int temp, i = 8;
-    while (i < 0){
+    while (i != -1){
         temp = mode & 1;
         mode >>= 1;
         if (!temp) buf[i] = '-';

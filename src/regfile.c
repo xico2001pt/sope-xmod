@@ -1,4 +1,4 @@
-+#include "regfile.h"
+#include "regfile.h"
 #include <stdio.h>
 #include <unistd.h>
 #include <stdlib.h>
@@ -21,8 +21,10 @@ int initLogFile(){
     
     char* logFilename = getenv("LOG_FILENAME");
     
+    
     if(logFilename==NULL){
         //Não existe path para o logFilename
+        printf("%s\n", logFilename);
         logFile = -1;
         return 1;
     }
@@ -124,4 +126,15 @@ int eventFileModf(char * filename, mode_t oldMode, mode_t newMode){
 
     return 0;
 
+}
+
+
+int endLogFile(){
+    if(logFile==-1){
+        printf("Log_File does not exist!\n");
+        return 0;
+    }
+
+    close(logFile);
+    return 0;
 }

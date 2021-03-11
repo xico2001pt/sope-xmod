@@ -16,9 +16,6 @@ int fillXmodInfo(XmodInfo * xi, int argc, char * argv[]) {
         return 1;
     }
     xi->mode = mode;
-    
-    // Preencher filename;
-    xi->filename = argv[argc-1];
 
     return 0;
 }
@@ -46,6 +43,21 @@ int fillXmodFlags(XmodFlags * xf, int argc, char * argv[]) {
         }
         else return 1;
     }
+    return 0;
+}
+
+int checkFileStatus(char* filename, XmodInfo * xf){
+    struct stat st;
+
+    //Verifica se o ficheiro existe
+    if (stat(filename, &st) != 0)
+        return -1;
+
+    //Define na struct o nome do ficheiro
+    xf->filename = filename;
+    //Define na struct o old_mode do ficheiro
+    xf->old_mode = st.st_mode;
+
     return 0;
 }
 
@@ -171,3 +183,5 @@ mode_t convertToOctal(char * mode, char * filename) {
     }
     else return -1;
 }
+
+

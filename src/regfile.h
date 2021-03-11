@@ -62,4 +62,11 @@ int eventSignalSent(int signo, pid_t targetPID);
  */
 int eventFileModf(char * filename, mode_t oldMode, mode_t newMode);
 
+/**
+ * @brief Closes the LogFile
+ * 
+ * @return int Returns 0 if it goes well
+ */
+int endLogFile();
+
 #endif // REGFILE_H
