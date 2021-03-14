@@ -20,8 +20,8 @@ static void signSIGABRTHandler(int signo);
 /**
  * @brief Função que determina como o pai vai responder ao utilizadr
  * 
- * @param answer "Yes" ->Continua ou "No" ->
- * @return int 
+ * @param answer "1"->Para o programa ou "2"->Continua o programa
+ * @return int -1 se deu erro ou se a resposta é inválida ou 0 se correu bem
  */
 int signSIGINTAnwserHandler(char* answer);
 

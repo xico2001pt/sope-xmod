@@ -15,7 +15,7 @@ extern int nftot;
  * @brief Nº de ficheiros modificados até ao momento
  * 
  */
-extern int mfmod;
+extern int nfmod;
 
 /**
  * @brief Diretório do ficheiro ou da pasta
