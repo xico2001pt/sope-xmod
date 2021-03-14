@@ -8,6 +8,15 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
+#include "xmod.h"
+
+int nftot = 0;
+int mfmod = 0;
+char* filename;
+int numberOf
+pid_t childProcesses[MAX_BUFFER];
+int isParent;
+
 
 int main(int argc, char * argv[]) {
     initLogFile();  // Initialize log file and related information
