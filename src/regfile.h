@@ -7,11 +7,25 @@
 #define EXIT(exitStatus) ({eventProcExit(exitStatus); endLogFile(); return exitStatus;})  // Register process termination and return
 
 /**
+ * @brief Initializes the clock
+ */
+void initClock();
+
+/**
  * @brief Initializes the log filename variable
  * 
  * @return int Returns -1 if it has an error on opening, 1 if it doesnt exist and 0 if it had no problems
  */
 int initLogFile();
+
+/**
+ * @brief Initializes the global variables
+ */
+void setVariables(int logFileID, clock_t clock);
+
+int getLogFileID();
+
+clock_t getClock();
 
 /**
  * @brief Function that register the starting info of any event(instant and pid)

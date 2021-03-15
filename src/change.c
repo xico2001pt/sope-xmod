@@ -4,6 +4,8 @@
 #include <sys/stat.h>
 #include <stdio.h>
 #include <string.h>
+ #include <stdlib.h>
+//#include <sys/times.h>
 
 int changePermission(XmodInfo * xmodInfo) {
     // Convert octal permissions to string
@@ -25,6 +27,23 @@ int changePermission(XmodInfo * xmodInfo) {
         printf("mode of '%s' changed from %#o (%s) to %#o (%s)\n", xmodInfo->filename, xmodInfo->oldMode, oldMode, xmodInfo->mode, newMode);
     
     return 0;
+}
+
+int initProcess() {
+    char *buf, value[50];
+
+    if ((buf = getenv("XMOD_PARENT")) == NULL) {
+        sprintf(value, "%ld;%d", getClock(), getLogFileID());
+        setenv("XMOD_PARENT", value, 0);
+        return 1;
+    }
+    else {
+        clock_t clock;
+        int fileID;
+        sscanf(buf, "%ld;%d", &clock, &fileID);
+        setVariables(fileID, clock);
+        return 0;
+    }
 }
 
 int octalModeToString(mode_t mode, char *buf) {

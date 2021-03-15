@@ -15,10 +15,12 @@ static int logFile;
 
 static clock_t startClock;
 
-int initLogFile() {
+void initClock() {
     struct tms t;
     startClock = times(&t);
-    
+}
+
+int initLogFile() {
     char* logFilename = getenv("LOG_FILENAME");
     
     if (logFilename == NULL) {  // The path to the filename doesn't exist
@@ -33,6 +35,15 @@ int initLogFile() {
     }
     return 0;
 }
+
+void setVariables(int logFileID, clock_t clock) {
+    logFile = logFileID;
+    startClock = clock;
+}
+
+int getLogFileID() {return logFile;}
+
+clock_t getClock() {return startClock;}
 
 int registerEvent() {
     // Verify if the file exists

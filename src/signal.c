@@ -42,18 +42,18 @@ int signSIGINTAnwserHandler(char* answer){
 
 static void signSIGINTHandler(int signo){
     //Escrever a mensagem
-    char* buffer;
+    char buffer[50];
 
-    sprintf(buffer, "%d; %s; %d; %d\n", getpid(),filename,nftot,nfmod);
+    sprintf(buffer, "%d; %s; %d; %d\n", getpid(), filename, nftot, nfmod);
     write(STDOUT_FILENO, buffer, strlen(buffer));
 
     //Loop pelos fihos do processo para enviar o sinal
-    for(int i = o; i<numberOfChildren; i++){
-        kill(childProcesses[i],SIGINT);
+    for (int i = 0; i < numberOfChildren; i++) {
+        kill(childProcesses[i], SIGINT);
     }
 
     //Se for pai:
-    if(isParent){
+    if (isFirstParent) {
         //Maneira de esperar que os filhos escrevam tudo
         sleep(5);
 
@@ -67,15 +67,10 @@ static void signSIGINTHandler(int signo){
         }
         
     }
-    else{
+    else
+    {
          //senão entra em pausa
         raise(SIGSTOP);
-    }
-    
-
-
-    
-
-   
+    }   
 }
 

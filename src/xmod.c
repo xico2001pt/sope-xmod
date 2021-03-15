@@ -9,17 +9,34 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 #include "xmod.h"
+#include <unistd.h>
+#include <wait.h>
 
 int nftot = 0;
 int mfmod = 0;
 char* filename;
-int numberOf
+int numberOfChildren;
 pid_t childProcesses[MAX_BUFFER];
-int isParent;
-
 
 int main(int argc, char * argv[]) {
-    initLogFile();  // Initialize log file and related information
+    
+    initClock();  // Initialize start clock
+    int isFirstParent = initProcess();  // Determinar se isParent
+
+    if (isFirstParent)
+        printf("I'm parent %d\n", getpid());
+    else {
+        printf("I'm child %d\n", getpid());
+        return 0;
+    }
+    int status;
+    if (fork() == 0) {  // Child
+        execv("./xmod", argv);
+    }
+    else wait(&status);
+    return 0;
+
+    initLogFile();  // Initialize log file
     eventProcCreat(argc, argv);  // Register process creation event
 
     // Check if number of console arguments is valid
