@@ -21,7 +21,7 @@ int initLogFile();
 /**
  * @brief Initializes the global variables
  */
-void setVariables(int logFileID, clock_t clock);
+void setClock(clock_t clock);
 
 int getLogFileID();
 

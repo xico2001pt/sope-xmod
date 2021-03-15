@@ -15,17 +15,13 @@
 int nftot = 0;
 int mfmod = 0;
 char* filename;
-int numberOfChildren;
-pid_t childProcesses[MAX_BUFFER];
 
 int main(int argc, char * argv[]) {
     
     initClock();  // Initialize start clock
     int isFirstParent = initProcess();  // Determinar se isParent
 
-    if (isFirstParent)
-        initLogFile();  // Initialize log file
-        
+    initLogFile(isFirstParent);  // Initialize log file
     eventProcCreat(argc, argv);  // Register process creation event
 
     // Check if number of console arguments is valid
@@ -39,7 +35,7 @@ int main(int argc, char * argv[]) {
     if (fillXmodInfo(&xmodInfo, argc, argv) != 0) EXIT(1);
 
     if (xmodInfo.flags.recursive) {
-        if (changePermissionRecursive(&xmodInfo) != 0) EXIT(2);
+        if (changePermissionRecursive(&xmodInfo, argc, argv) != 0) EXIT(2);
     }
     else {
         if (changePermission(&xmodInfo) != 0) EXIT(2);

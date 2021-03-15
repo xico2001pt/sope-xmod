@@ -1,5 +1,6 @@
 #include "signal.h"
 #include "xmod.h"
+#include "change.h"
 #include <wait.h>
 #include "regfile.h"
 #include <string.h>

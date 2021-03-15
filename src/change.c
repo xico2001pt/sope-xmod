@@ -6,6 +6,11 @@
 #include <string.h>
 #include <stdlib.h>
 #include <dirent.h>
+#include <unistd.h>
+#include <sys/wait.h>
+
+pid_t childProcesses[100];
+int numberOfChildren = 0;
 
 int changePermission(XmodInfo * xmodInfo) {
     // Convert octal permissions to string
@@ -29,9 +34,8 @@ int changePermission(XmodInfo * xmodInfo) {
     return 0;
 }
 
-int changePermissionRecursive(XmodInfo * xmodInfo) {
+int changePermissionRecursive(XmodInfo * xmodInfo, int argc, char * argv[]) {
 
-    // Se for DIR -> entra no for
     // Para cada fich/pasta dentro da pasta:
         // Alterar xmodInfo
         // Se for pasta -> fazer fork() e execv("./xmod", argv);
@@ -49,6 +53,7 @@ int changePermissionRecursive(XmodInfo * xmodInfo) {
     struct stat buf;
     int found = 0;
 
+    // Change permissions for each file/dir inside
     while ((files = readdir(dp)) != NULL)
     {
         if (found >= 2)
@@ -60,10 +65,28 @@ int changePermissionRecursive(XmodInfo * xmodInfo) {
                 return 1;
             }
 
-            if (S_ISDIR(buf.st_mode)) {
-                return 0;
+            if (S_ISDIR(buf.st_mode))
+            {
+                pid_t pid;
+                
+                if ((pid = fork()) < 0) {
+                    perror("fork()");
+                    return 1;
+                }
+                else if (pid == 0) {  // Child
+                    char * filecopy = argv[argc - 1];
+                    argv[argc - 1] = path;
+                    execv(argv[0], argv);
+                    argv[argc - 1] = filecopy;
+
+                }
+                else {  // Father
+                    childProcesses[numberOfChildren] = pid;
+                    numberOfChildren++;
+                }
             }
-            else {
+            else
+            {
                 XmodInfo subFile;
                 copyXmodInfo(&subFile, xmodInfo);
                 subFile.filename = path;
@@ -75,6 +98,10 @@ int changePermissionRecursive(XmodInfo * xmodInfo) {
         found++;
     }
 
+    // Wait for children
+    int status;
+    for (int i = 0; i < numberOfChildren; ++i) waitpid(childProcesses[i], &status, 0);
+
     return 0;
 }
 
@@ -82,15 +109,14 @@ int initProcess() {
     char *buf, value[50];
 
     if ((buf = getenv("XMOD_PARENT")) == NULL) {
-        sprintf(value, "%ld;%d", getClock(), getLogFileID());
+        sprintf(value, "%ld", getClock());
         setenv("XMOD_PARENT", value, 0);
         return 1;
     }
     else {
         clock_t clock;
-        int fileID;
-        sscanf(buf, "%ld;%d", &clock, &fileID);
-        setVariables(fileID, clock);
+        sscanf(buf, "%ld", &clock);
+        setClock(clock);
         return 0;
     }
 }

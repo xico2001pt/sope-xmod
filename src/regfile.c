@@ -20,7 +20,7 @@ void initClock() {
     startClock = times(&t);
 }
 
-int initLogFile() {
+int initLogFile(int firstParent) {
     char* logFilename = getenv("LOG_FILENAME");
     
     if (logFilename == NULL) {  // The path to the filename doesn't exist
@@ -30,14 +30,15 @@ int initLogFile() {
     else {
         // Flags -> Write only, create file if doesn't exist and truncate if it does
         // Permissions -> Read and write for all users
-        logFile = open(logFilename, O_WRONLY|O_CREAT|O_TRUNC, S_IRGRP|S_IRUSR|S_IROTH|S_IWGRP|S_IWOTH|S_IWUSR);
+        if (firstParent) logFile = open(logFilename, O_WRONLY|O_CREAT|O_TRUNC, S_IRGRP|S_IRUSR|S_IROTH|S_IWGRP|S_IWOTH|S_IWUSR);
+        else logFile = open(logFilename, O_WRONLY|O_APPEND);
+
         if(logFile == -1) return -1;  // Error opening the file
     }
     return 0;
 }
 
-void setVariables(int logFileID, clock_t clock) {
-    logFile = logFileID;
+void setClock(clock_t clock) {
     startClock = clock;
 }
 
