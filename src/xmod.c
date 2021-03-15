@@ -23,10 +23,9 @@ int main(int argc, char * argv[]) {
     initClock();  // Initialize start clock
     int isFirstParent = initProcess();  // Determinar se isParent
 
-
     if (isFirstParent)
         initLogFile();  // Initialize log file
-    
+        
     eventProcCreat(argc, argv);  // Register process creation event
 
     // Check if number of console arguments is valid

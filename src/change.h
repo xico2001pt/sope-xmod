@@ -11,14 +11,13 @@
  */
 int changePermission(XmodInfo * xmodInfo);
 
-// TODO: Alterar
 /**
  * @brief Changes the permission of the file/dir based on the new permissions
  * 
  * @param xmodInfo Struct containing all the info about permission changes
  * @return int Returns 1 if not success and 0 if success
  */
-int changePermissionRecursive(XmodInfo * xmodInfo)
+int changePermissionRecursive(XmodInfo * xmodInfo);
 
 /**
  * @brief Changes the permissions from octal to the regular mode
