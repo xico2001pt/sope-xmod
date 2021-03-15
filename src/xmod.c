@@ -23,20 +23,10 @@ int main(int argc, char * argv[]) {
     initClock();  // Initialize start clock
     int isFirstParent = initProcess();  // Determinar se isParent
 
-    if (isFirstParent)
-        printf("I'm parent %d\n", getpid());
-    else {
-        printf("I'm child %d\n", getpid());
-        return 0;
-    }
-    int status;
-    if (fork() == 0) {  // Child
-        execv("./xmod", argv);
-    }
-    else wait(&status);
-    return 0;
 
-    initLogFile();  // Initialize log file
+    if (isFirstParent)
+        initLogFile();  // Initialize log file
+    
     eventProcCreat(argc, argv);  // Register process creation event
 
     // Check if number of console arguments is valid
@@ -49,7 +39,12 @@ int main(int argc, char * argv[]) {
     XmodInfo xmodInfo;
     if (fillXmodInfo(&xmodInfo, argc, argv) != 0) EXIT(1);
 
-    if (changePermission(&xmodInfo) != 0) EXIT(2);
+    if (xmodInfo.flags.recursive) {
+        if (changePermissionRecursive(&xmodInfo) != 0) EXIT(2);
+    }
+    else {
+        if (changePermission(&xmodInfo) != 0) EXIT(2);
+    }
 
     EXIT(0);
 }

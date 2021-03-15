@@ -38,6 +38,15 @@ typedef struct {
 int fillXmodInfo(XmodInfo * xi, int argc, char * argv[]);
 
 /**
+ * @brief Copies the src XmodInfo values to dest
+ * 
+ * @param dest XmodInfo struct to be copied to
+ * @param src XmodInfo struct to copy from
+ * @return int Returns 0 on success and 1 in case of error
+ */
+int copyXmodInfo(XmodInfo * dest, XmodInfo * src);
+
+/**
  * @brief Fills the given XmodFlags struct according to the given arguments
  * 
  * @param argc Number of arguments

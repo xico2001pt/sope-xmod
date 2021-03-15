@@ -28,6 +28,17 @@ int fillXmodInfo(XmodInfo * xi, int argc, char * argv[]) {
     return 0;
 }
 
+int copyXmodInfo(XmodInfo * dest, XmodInfo * src) {
+    if (dest == NULL || src == NULL) return 1;
+
+    dest->flags = src->flags;
+    dest->mode = src->mode;
+    dest->oldMode = src->oldMode;
+    dest->filename = src->filename;
+
+    return 0;
+}
+
 int fillXmodFlags(XmodFlags * xf, int argc, char * argv[]) {
     // Initialize struct
     memset(xf, 0, sizeof(*xf));

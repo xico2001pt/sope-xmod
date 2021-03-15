@@ -4,8 +4,8 @@
 #include <sys/stat.h>
 #include <stdio.h>
 #include <string.h>
- #include <stdlib.h>
-//#include <sys/times.h>
+#include <stdlib.h>
+#include <dirent.h>
 
 int changePermission(XmodInfo * xmodInfo) {
     // Convert octal permissions to string
@@ -26,6 +26,55 @@ int changePermission(XmodInfo * xmodInfo) {
     if (xmodInfo->flags.changes || xmodInfo->flags.verbose)
         printf("mode of '%s' changed from %#o (%s) to %#o (%s)\n", xmodInfo->filename, xmodInfo->oldMode, oldMode, xmodInfo->mode, newMode);
     
+    return 0;
+}
+
+int changePermissionRecursive(XmodInfo * xmodInfo) {
+
+    // Se for DIR -> entra no for
+    // Para cada fich/pasta dentro da pasta:
+        // Alterar xmodInfo
+        // Se for pasta -> fazer fork() e execv("./xmod", argv);
+        // Senão, -> alterar xmodinfo changePermission
+
+    // Change file/dir permission
+    if (changePermission(xmodInfo) != 0) return 1;
+
+    // Verify if it is a directory
+    if (!S_ISDIR(xmodInfo->oldMode)) return 0;
+
+    DIR *dp = opendir(xmodInfo->filename);
+    struct dirent *files;
+    char path[300];
+    struct stat buf;
+    int found = 0;
+
+    while ((files = readdir(dp)) != NULL)
+    {
+        if (found >= 2)
+        {
+            sprintf(path, "%s/%s", xmodInfo->filename, files->d_name);
+
+            if (stat(path, &buf) == -1) {
+                perror("stat()");
+                return 1;
+            }
+
+            if (S_ISDIR(buf.st_mode)) {
+                return 0;
+            }
+            else {
+                XmodInfo subFile;
+                copyXmodInfo(&subFile, xmodInfo);
+                subFile.filename = path;
+                subFile.oldMode = buf.st_mode;
+                changePermission(&subFile);
+            }
+        }
+
+        found++;
+    }
+
     return 0;
 }
 
