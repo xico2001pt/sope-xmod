@@ -11,15 +11,19 @@
 #include "xmod.h"
 #include <unistd.h>
 #include <wait.h>
+#include "signal.h"
 
-int nftot = 0;
-int mfmod = 0;
-char* filename;
+int isFirstParent=1;
 
 int main(int argc, char * argv[]) {
     
     initClock();  // Initialize start clock
-    int isFirstParent = initProcess();  // Determinar se isParent
+    isFirstParent = initProcess();  // Determinar se isParent
+
+    signal(SIGINT, signSIGINTHandler);
+    signal(SIGCONT, sighandlerSIGCONT);
+    signal(SIGCHLD, sigHandlerSIGCHILD);
+    signal(SIGUSR1, sigHandlerSIGUSR1);
 
     initLogFile(isFirstParent);  // Initialize log file
     eventProcCreat(argc, argv);  // Register process creation event
@@ -40,6 +44,13 @@ int main(int argc, char * argv[]) {
     else {
         if (changePermission(&xmodInfo) != 0) EXIT(2);
     }
+    
 
+    //Se não for pai, envia o SIGCHLD ao pai
+    if(!isFirstParent){
+        
+        eventSignalSent(SIGCHLD, getppid());
+    }
+    
     EXIT(0);
 }

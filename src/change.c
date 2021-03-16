@@ -8,9 +8,13 @@
 #include <dirent.h>
 #include <unistd.h>
 #include <sys/wait.h>
+#include "signal.h"
 
 pid_t childProcesses[100];
 int numberOfChildren = 0;
+int nftot = 0;
+int nfmod = 0;
+char* filename;
 
 int changePermission(XmodInfo * xmodInfo) {
     // Convert octal permissions to string
@@ -35,14 +39,16 @@ int changePermission(XmodInfo * xmodInfo) {
 }
 
 int changePermissionRecursive(XmodInfo * xmodInfo, int argc, char * argv[]) {
-
+    filename = argv[argc-1];
     // Para cada fich/pasta dentro da pasta:
         // Alterar xmodInfo
         // Se for pasta -> fazer fork() e execv("./xmod", argv);
         // Senão, -> alterar xmodinfo changePermission
-
+    
+    nftot++;
     // Change file/dir permission
     if (changePermission(xmodInfo) != 0) return 1;
+    nfmod++;
 
     // Verify if it is a directory
     if (!S_ISDIR(xmodInfo->oldMode)) return 0;
@@ -57,6 +63,7 @@ int changePermissionRecursive(XmodInfo * xmodInfo, int argc, char * argv[]) {
     // Change permissions for each file/dir inside
     while ((files = readdir(dp)) != NULL)
     {
+        sleep(1);
         if (strcmp(files->d_name, ".") != 0 && strcmp(files->d_name, "..") != 0)
         {
             sprintf(path, "%s/%s", xmodInfo->filename, files->d_name);
@@ -65,7 +72,7 @@ int changePermissionRecursive(XmodInfo * xmodInfo, int argc, char * argv[]) {
                 perror("stat()");
                 return 1;
             }
-
+            nftot++;
             if (S_ISDIR(buf.st_mode))
             {
                 pid_t pid;
@@ -84,6 +91,7 @@ int changePermissionRecursive(XmodInfo * xmodInfo, int argc, char * argv[]) {
                     childProcesses[numberOfChildren] = pid;
                     numberOfChildren++;
                     //waitpid(pid, &status, 0);
+                    nfmod++;
                 }
             }
             else
@@ -92,6 +100,7 @@ int changePermissionRecursive(XmodInfo * xmodInfo, int argc, char * argv[]) {
                 subFile.filename = path;
                 subFile.oldMode = buf.st_mode;
                 changePermission(&subFile);
+                nfmod++;
             }
         }
     }

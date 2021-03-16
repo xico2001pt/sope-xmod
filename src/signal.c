@@ -7,6 +7,7 @@
 #include <stdio.h>
 #include <unistd.h>
 #include <fcntl.h>
+#include "xmod.h"
 
 /**
  * 1º-> funções de reigisto de sinais
@@ -15,9 +16,9 @@
  * 
  */
 
-int signSIGINTAnwserHandler(char* answer){
+int signSIGINTAnwserHandler(char answer[]){
     //Se for igual a 1, vai mandar todos os procesos abortarem
-    if(strcmp(answer, "1")){
+    if(answer[0] =='1'){
         for(int i = 0; i<numberOfChildren; i++){
             kill(childProcesses[i], SIGUSR1);
             eventSignalSent(SIGUSR1, childProcesses[i]);
@@ -40,7 +41,7 @@ int signSIGINTAnwserHandler(char* answer){
 
     }
 
-    else if(strcmp(answer, "2")){
+    else if(answer[0] == '2'){
         for(int i = 0; i<numberOfChildren; i++){
             eventSignalSent(SIGCONT, childProcesses[i]);
             kill(childProcesses[i], SIGCONT);
@@ -57,33 +58,30 @@ int signSIGINTAnwserHandler(char* answer){
 
 
 
-static void signSIGINTHandler(int signo){
+void signSIGINTHandler(int signo){
     eventSignalRecv(SIGINT);
     //Escrever a mensagem
     char buffer[50];
 
     sprintf(buffer, "%d; %s; %d; %d\n", getpid(), filename, nftot, nfmod);
     write(STDOUT_FILENO, buffer, strlen(buffer));
-
-    //Loop pelos fihos do processo para enviar o sinal
-    for (int i = 0; i < numberOfChildren; i++) {
-        kill(childProcesses[i], SIGINT);
-        eventSignalSent(SIGINT, childProcesses[i]);
-    }
+    
 
     //Se for pai:
     if (isFirstParent) {
         //Maneira de esperar que os filhos escrevam tudo
         sleep(5);
+        char input[1];
 
 
         write(STDOUT_FILENO,"Do you want to stop the program(1) or do you prefer to continue(2)?\t", 69);
     mauInput:
-        read(STDIN_FILENO, buffer, 1);
-        if(signSIGINTAnwserHandler(buffer)==-1){
+        read(STDIN_FILENO, input, 1);
+        if(signSIGINTAnwserHandler(input)==-1){
             write(STDOUT_FILENO,"Please insert '1' to stop or '2' to continue!\t", 47);
             goto mauInput;
         }
+
         
     }
     else
@@ -91,24 +89,24 @@ static void signSIGINTHandler(int signo){
         //senão entra em pausa
         eventSignalSent(SIGSTOP, getpid());
         eventSignalRecv(SIGSTOP);
-        raise(SIGSTOP);
+        pause();
     }   
 }
 
 
-static void sighandlerSIGCONT(int signo){
+void sighandlerSIGCONT(int signo){
     //Regist que recebeu o sinal
     eventSignalRecv(SIGCONT);
 
     for (int i = 0; i < numberOfChildren; i++) {
         //envia o sigcont aos filhos e regista
-        kill(childProcesses[i], SIGCONT;
+        kill(childProcesses[i], SIGCONT);
         eventSignalSent(SIGCONT, childProcesses[i]);
     }
 
 }
 
-static void sigHandlerSIGUSR1(int signo){
+void sigHandlerSIGUSR1(int signo){
     eventSignalRecv(SIGUSR1);
 
     for(int i = 0; i<numberOfChildren; i++){
@@ -126,8 +124,7 @@ static void sigHandlerSIGUSR1(int signo){
     
 }
 
-static void sigHandlerSIGCHLD(int signo){
+void sigHandlerSIGCHILD(int signo){
     eventSignalRecv(SIGCHLD);
-    return 0;
 }
 

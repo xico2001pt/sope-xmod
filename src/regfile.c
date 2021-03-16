@@ -6,6 +6,7 @@
 #include <fcntl.h>
 #include <time.h>
 #include <string.h>
+#include "signal.h"
 
 /**
  * @brief LOG_FILENAME file pointer if it exists, NULL if it doesnt
@@ -102,9 +103,82 @@ int eventProcExit(int exitStatus) {
     return 0;
 }
 
-int eventSignalRecv(int signo);
+int eventSignalRecv(int signo){
+    char event[MAX_CHARS];
 
-int eventSignalSent(int signo, pid_t targetPID);
+    if (registerEvent(event) == 1) return 1;
+    strcat(event, "SIGNAL_REC ; ");
+
+    char sign[20];
+    switch(signo){
+        case SIGINT:
+        sprintf(sign, "SIGINT\n");
+        break;
+        case SIGCHLD:
+        sprintf(sign, "SIGCHLD\n");
+        break;
+        case SIGCONT:
+        sprintf(sign, "SIGCONT\n");
+        break;
+        case SIGKILL:
+        sprintf(sign, "SIGKILL\n");
+        break;
+        case SIGSTOP:
+        sprintf(sign, "SIGSTOP\n");
+        break;
+        case SIGUSR1:
+        sprintf(sign, "SIGUSR1\n");
+        break;
+
+    }
+
+    strcat(event, sign);
+
+    fseek(logFile, 0, SEEK_END);
+    fwrite(event, sizeof(char), strlen(event), logFile);
+    fflush(logFile);  // Flush output buffer
+
+    return 0;
+}
+
+int eventSignalSent(int signo, pid_t targetPID){
+    char event[MAX_CHARS];
+
+    if (registerEvent(event) == 1) return 1;
+    strcat(event, "SIGNAL_REC ; ");
+
+    char sign[20];
+    switch(signo){
+        case SIGINT:
+        sprintf(sign, "SIGINT ; %d\n", targetPID);
+        break;
+        case SIGCHLD:
+        sprintf(sign, "SIGCHLD; %d\n", targetPID);
+        break;
+        case SIGCONT:
+        sprintf(sign, "SIGCONT; %d\n", targetPID);
+        break;
+        case SIGKILL:
+        sprintf(sign, "SIGKILL; %d\n", targetPID);
+        break;
+        case SIGSTOP:
+        sprintf(sign, "SIGSTOP; %d\n", targetPID);
+        break;
+        case SIGUSR1:
+        sprintf(sign, "SIGUSR1; %d\n", targetPID);
+        break;
+
+    }
+
+    strcat(event, sign);
+
+    fseek(logFile, 0, SEEK_END);
+    fwrite(event, sizeof(char), strlen(event), logFile);
+    fflush(logFile);  // Flush output buffer
+
+    return 0;
+
+}
 
 int eventFileModf(char * filename, mode_t oldMode, mode_t newMode) {
     char event[MAX_CHARS];

@@ -1,24 +1,10 @@
 #ifndef XMOD_H
 #define XMOD_H
 
-#include <sys/types.h>
-
 /**
- * @brief Nº de ficheiros encontrados até ao momento
+ * @brief Variável que diz se é o processo pai ou não
  * 
  */
-extern int nftot;
+extern int isFirstParent;
 
-/**
- * @brief Nº de ficheiros modificados até ao momento
- * 
- */
-extern int nfmod;
-
-/**
- * @brief Diretório do ficheiro ou da pasta
- * 
- */
-extern char* filename;
-
-#endif
+#endif //XMOD_H
