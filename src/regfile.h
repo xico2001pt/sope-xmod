@@ -23,16 +23,15 @@ int initLogFile();
  */
 void setClock(clock_t clock);
 
-int getLogFileID();
-
 clock_t getClock();
 
 /**
  * @brief Function that register the starting info of any event(instant and pid)
  * 
+ * @param str String that will receive the event text
  * @return int Returns 1 if it ends in error and 0 if it goes all right
  */
-int registerEvent();
+int registerEvent(char * str);
 
 /**
  * @brief Function that registers the Proccess creation event on the LOG_FILENAME

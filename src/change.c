@@ -1,5 +1,5 @@
-#include "change.h"
-#include "regfile.h"
+#include "./change.h"
+#include "./regfile.h"
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <stdio.h>
@@ -49,14 +49,15 @@ int changePermissionRecursive(XmodInfo * xmodInfo, int argc, char * argv[]) {
 
     DIR *dp = opendir(xmodInfo->filename);
     struct dirent *files;
-    char path[300];
+    char path[400];
     struct stat buf;
-    int found = 0;
+    XmodInfo subFile;
+    int status;
 
     // Change permissions for each file/dir inside
     while ((files = readdir(dp)) != NULL)
     {
-        if (found >= 2)
+        if (strcmp(files->d_name, ".") != 0 && strcmp(files->d_name, "..") != 0)
         {
             sprintf(path, "%s/%s", xmodInfo->filename, files->d_name);
 
@@ -78,28 +79,24 @@ int changePermissionRecursive(XmodInfo * xmodInfo, int argc, char * argv[]) {
                     argv[argc - 1] = path;
                     execv(argv[0], argv);
                     argv[argc - 1] = filecopy;
-
                 }
                 else {  // Father
                     childProcesses[numberOfChildren] = pid;
                     numberOfChildren++;
+                    //waitpid(pid, &status, 0);
                 }
             }
             else
             {
-                XmodInfo subFile;
                 copyXmodInfo(&subFile, xmodInfo);
                 subFile.filename = path;
                 subFile.oldMode = buf.st_mode;
                 changePermission(&subFile);
             }
         }
-
-        found++;
     }
 
     // Wait for children
-    int status;
     for (int i = 0; i < numberOfChildren; ++i) waitpid(childProcesses[i], &status, 0);
 
     return 0;

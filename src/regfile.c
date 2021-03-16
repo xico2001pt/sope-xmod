@@ -8,12 +8,14 @@
 #include <string.h>
 
 /**
- * @brief LOG_FILENAME number if it exists, -1 if it doesnt
+ * @brief LOG_FILENAME file pointer if it exists, NULL if it doesnt
  * 
  */
-static int logFile;
+static FILE * logFile;
 
 static clock_t startClock;
+
+#define MAX_CHARS 300
 
 void initClock() {
     struct tms t;
@@ -24,17 +26,18 @@ int initLogFile(int firstParent) {
     char* logFilename = getenv("LOG_FILENAME");
     
     if (logFilename == NULL) {  // The path to the filename doesn't exist
-        logFile = -1;
+        logFile = NULL;
         return 1;
     }
     else {
         // Flags -> Write only, create file if doesn't exist and truncate if it does
         // Permissions -> Read and write for all users
-        if (firstParent) logFile = open(logFilename, O_WRONLY|O_CREAT|O_TRUNC, S_IRGRP|S_IRUSR|S_IROTH|S_IWGRP|S_IWOTH|S_IWUSR);
-        else logFile = open(logFilename, O_WRONLY|O_APPEND);
+        if (firstParent) logFile = fopen(logFilename, "w");
+        else logFile = fopen(logFilename, "a");
 
-        if(logFile == -1) return -1;  // Error opening the file
+        if (logFile == NULL) return -1;  // Error opening the file
     }
+    
     return 0;
 }
 
@@ -42,63 +45,59 @@ void setClock(clock_t clock) {
     startClock = clock;
 }
 
-int getLogFileID() {return logFile;}
-
 clock_t getClock() {return startClock;}
 
-int registerEvent() {
-    // Verify if the file exists
-    if (logFile == -1)
+int registerEvent(char * str) {
+    // Verify if the file  or the string exist
+    if (logFile == NULL || str == NULL)
         return 1;
     
-    // Register instant
+    // Register instant and PID
     struct tms t;
-    char instStr[10];
     int inst = (times(&t) - startClock) * 1000 / sysconf(_SC_CLK_TCK);
-    sprintf(instStr, "%d ; ", inst);
-    write(logFile, instStr, strlen(instStr));
-
-    // Register PID
-    char pidStr[10];
     pid_t pid = getpid();
-    sprintf(pidStr, "%d; ", pid);
-    write(logFile, pidStr, strlen(pidStr));
+    sprintf(str, "%d ; %d ; ", inst, pid);
 
     return 0;
 }
 
 int eventProcCreat(int argc, char * argv[]) {
-    // Verify if the file exists
-    if (registerEvent() == 1)
-        return 1;
-    
-    // After inst; pid; write event ;
-    write(logFile, "PROC_CREAT",10);
-    write(logFile, " ; ", 3);
+    char event[MAX_CHARS];
+
+    if (registerEvent(event) == 1) return 1;
+
+    strcat(event, "PROC_CREAT ; ");  // After inst; pid; write event ;
 
     // After inst ; pid ; event ; write arg[1] arg[2] arg[3]
     for (int i = 0; i < argc; i++) {
-        write(logFile, argv[i], strlen(argv[i]));
-        write(logFile, " ", 1);
+        strcat(event, argv[i]);
+        strcat(event, " ");
     }
-    write(logFile, "\n", 1);
+
+    strcat(event, "\n");
+
+    fseek(logFile, 0, SEEK_END);
+    fwrite(event, sizeof(char), strlen(event), logFile);
+    fflush(logFile);  // Flush output buffer
 
     return 0;
 }
 
 int eventProcExit(int exitStatus) {
-    // Verify if the file exists
-    if (registerEvent() == 1)
-        return 1;
-    
-    // After inst; pid; write event ;
-    write(logFile, "PROC_EXIT", 9);
-    write(logFile, " ; ", 3);
+    char event[MAX_CHARS];
+
+    if (registerEvent(event) == 1) return 1;
+
+    strcat(event, "PROC_EXIT ; ");  // After inst; pid; write event ;
 
     // Write exit status
-    char exitStr[10];
+    char exitStr[20];
     sprintf(exitStr, "%d\n", exitStatus);
-    write(logFile, exitStr, strlen(exitStr));
+    strcat(event, exitStr);
+
+    fseek(logFile, 0, SEEK_END);
+    fwrite(event, sizeof(char), strlen(event), logFile);
+    fflush(logFile);  // Flush output buffer
 
     return 0;
 }
@@ -108,27 +107,19 @@ int eventSignalRecv(int signo);
 int eventSignalSent(int signo, pid_t targetPID);
 
 int eventFileModf(char * filename, mode_t oldMode, mode_t newMode) {
-    // Verify if the file exists
-    if (registerEvent() == 1)
-        return 1;
-    
-    // Write event
-    write(logFile, "FILE_MODF", 9);
-    write(logFile, " ; ", 3);
+    char event[MAX_CHARS];
 
-    // Write filename
-    write(logFile, filename, strlen(filename));
-    write(logFile, " : ", 3);
+    if (registerEvent(event) == 1) return 1;
 
-    // Write oldMode
-    char oldmode[10];
-    sprintf(oldmode, "%#o : ", oldMode);
-    write(logFile, oldmode, strlen(oldmode));
+    // Write event ; filename : oldMode : newMode
+    char str[MAX_CHARS];
+    sprintf(str, "FILE_MODF ; %s : %#o : %#o\n", filename, oldMode, newMode);
 
-    // Write newMode
-    char newmode[10];
-    sprintf(newmode, "%#o\n", newMode);
-    write(logFile, newmode, strlen(newmode));
+    strcat(event, str);
+
+    fseek(logFile, 0, SEEK_END);
+    fwrite(event, sizeof(char), strlen(event), logFile);
+    fflush(logFile);  // Flush output buffer
 
     return 0;
 }
@@ -136,9 +127,9 @@ int eventFileModf(char * filename, mode_t oldMode, mode_t newMode) {
 
 int endLogFile() {
     // Verify if the file exists
-    if(logFile == -1)
+    if(logFile == NULL)
         return 1;
 
-    close(logFile);
+    fclose(logFile);
     return 0;
 }
