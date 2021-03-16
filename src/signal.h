@@ -11,11 +11,26 @@
  */
 static void signSIGINTHandler(int signo);
 
-static void signSIGCONTHandler(int signo);
+/**
+ * @brief Handler do sinal CONT que permite enviar o cont para os filhos
+ * 
+ * @param signo SIGCONT
+ */
+static void sighandlerSIGCONT(int signo);
 
-static void signSIGSTOPHandler(int signo);
+/**
+ * @brief Handler do SIGUSR1 que nos permitirá enviar aos filhos o sinal de abort
+ * 
+ * @param signo SIGUSR1
+ */
+static void sigHandlerSIGUSR1(int signo);
 
-static void signSIGABRTHandler(int signo);
+/**
+ * @brief Handler do SIGCHILD que permite o registo do sinal recebido
+ * 
+ * @param signo SIGCHLD
+ */
+static void sigHandlerSIGCHILD(int signo);
 
 /**
  * @brief Função que determina como o pai vai responder ao utilizadr
