@@ -24,7 +24,7 @@ int changePermission(XmodInfo * xmodInfo) {
 
     // Changing permissions
     if (chmod(xmodInfo->filename, xmodInfo->mode) != 0) {
-        printf("failed to change mode of '%s' from %#o (%s) to %#o (%s)\n", xmodInfo->filename, xmodInfo->oldMode, oldMode, xmodInfo->mode, newMode);
+        printf("failed to change mode of '%s' from %#o (%s) to %#o (%s)\n", xmodInfo->filename, xmodInfo->oldMode & 0777, oldMode,  xmodInfo->mode& 0777, newMode);
         return 1;
     }
     
@@ -33,7 +33,7 @@ int changePermission(XmodInfo * xmodInfo) {
 
     // Writing in the console the changes that took effect
     if (xmodInfo->flags.changes || xmodInfo->flags.verbose)
-        printf("mode of '%s' changed from %#o (%s) to %#o (%s)\n", xmodInfo->filename, xmodInfo->oldMode, oldMode, xmodInfo->mode, newMode);
+        printf("mode of '%s' changed from %#o (%s) to %#o (%s)\n", xmodInfo->filename, xmodInfo->oldMode & 0777, oldMode, xmodInfo->mode &0777, newMode);
     
     return 0;
 }
