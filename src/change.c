@@ -32,9 +32,10 @@ int changePermission(XmodInfo * xmodInfo) {
     eventFileModf(xmodInfo->filename, xmodInfo->oldMode, xmodInfo->mode);
 
     // Writing in the console the changes that took effect
-    if (xmodInfo->flags.changes || xmodInfo->flags.verbose)
+    if ((xmodInfo->flags.verbose || xmodInfo->flags.changes) && ((xmodInfo->oldMode & 0777) != xmodInfo->mode))
         printf("mode of '%s' changed from %#o (%s) to %#o (%s)\n", xmodInfo->filename, xmodInfo->oldMode & 0777, oldMode, xmodInfo->mode &0777, newMode);
-    
+    else if (xmodInfo->flags.verbose && ((xmodInfo->oldMode & 0777) == xmodInfo->mode))
+        printf("mode of '%s' retained as %#o (%s)\n", xmodInfo->filename, xmodInfo->oldMode & 0777, oldMode);
     return 0;
 }
 

@@ -187,7 +187,7 @@ int eventFileModf(char * filename, mode_t oldMode, mode_t newMode) {
 
     // Write event ; filename : oldMode : newMode
     char str[MAX_CHARS];
-    sprintf(str, "FILE_MODF ; %s : %#o : %#o\n", filename, oldMode, newMode);
+    sprintf(str, "FILE_MODF ; %s : %#o : %#o\n", filename, oldMode & 0777, newMode & 0777);
 
     strcat(event, str);
 
