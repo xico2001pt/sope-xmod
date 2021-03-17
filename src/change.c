@@ -90,7 +90,7 @@ int changePermissionRecursive(XmodInfo * xmodInfo, int argc, char * argv[]) {
                     nfmod++;
                 }
             }
-            else if (!S_ISLNK(buf.st_mode)) {
+            else if (S_ISLNK(buf.st_mode)) {
                 if (xmodInfo->flags.verbose) printf("neither symbolic link '%s' nor referent has been changed\n", path);
             }
             else {
