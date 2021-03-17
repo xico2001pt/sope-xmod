@@ -4,39 +4,39 @@
 #include <signal.h>
 
 /**
- * @brief Handler so sinal CTRL+C de interrupção. 
- * Este terá de mandar a mensagem e depois enviar o sinal aos seus filhos.
+ * @brief Handler of the CTRL+C interruption signal 
+ * This will have to send the message after sending the signal to the children
  * 
  * @param signo SIGINT
  */
 void signSIGINTHandler(int signo);
 
 /**
- * @brief Handler do sinal CONT que permite enviar o cont para os filhos
+ * @brief Handler of the CONT signal, that allows us to send CONT to the children
  * 
  * @param signo SIGCONT
  */
 void sighandlerSIGCONT(int signo);
 
 /**
- * @brief Handler do SIGUSR1 que nos permitirá enviar aos filhos o sinal de abort
+ * @brief Handler of the SIGUSR1 that allows us to send KILL to the children
  * 
  * @param signo SIGUSR1
  */
 void sigHandlerSIGUSR1(int signo);
 
 /**
- * @brief Handler do SIGCHILD que permite o registo do sinal recebido
+ * @brief Handler of the SIGCHILD allowing us to register the signal
  * 
  * @param signo SIGCHLD
  */
 void sigHandlerSIGCHILD(int signo);
 
 /**
- * @brief Função que determina como o pai vai responder ao utilizadr
+ * @brief Function that determines how the first process will respond to the user
  * 
- * @param answer "1"->Para o programa ou "2"->Continua o programa
- * @return int -1 se deu erro ou se a resposta é inválida ou 0 se correu bem
+ * @param answer "1" -> Stops the program or "2" -> Continues the program
+ * @return int -1 if error or invalid answer, 0 if everything's ok
  */
 int signSIGINTAnwserHandler(char* answer);
 
