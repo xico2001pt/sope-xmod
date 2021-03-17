@@ -65,7 +65,7 @@ int changePermissionRecursive(XmodInfo * xmodInfo, int argc, char * argv[]) {
     // Change permissions for each file/dir inside
     while ((files = readdir(dp)) != NULL)
     {
-        sleep(1);
+        //sleep(1);
         if (strcmp(files->d_name, ".") != 0 && strcmp(files->d_name, "..") != 0)
         {
             sprintf(path, "%s/%s", xmodInfo->filename, files->d_name);

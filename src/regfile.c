@@ -9,10 +9,10 @@
 #include "signal.h"
 
 /**
- * @brief LOG_FILENAME file pointer if it exists, NULL if it doesnt
+ * @brief LOG_FILENAME number if it exists, -1 if it doesnt
  * 
  */
-static FILE * logFile;
+static int logFile;
 
 static clock_t startClock;
 
@@ -23,34 +23,35 @@ void initClock() {
     startClock = times(&t);
 }
 
+void setClock(clock_t clock) {startClock = clock;}
+
+clock_t getClock() {return startClock;}
+
 int initLogFile(int firstParent) {
     char* logFilename = getenv("LOG_FILENAME");
     
     if (logFilename == NULL) {  // The path to the filename doesn't exist
-        logFile = NULL;
+        logFile = -1;
         return 1;
     }
     else {
         // Flags -> Write only, create file if doesn't exist and truncate if it does
         // Permissions -> Read and write for all users
-        if (firstParent) logFile = fopen(logFilename, "w");
-        else logFile = fopen(logFilename, "a");
+        if (firstParent) logFile = open(logFilename, O_WRONLY|O_CREAT|O_TRUNC|O_SYNC, S_IRGRP|S_IRUSR|S_IROTH|S_IWGRP|S_IWOTH|S_IWUSR);
+        else {
+            logFile = open(logFilename, O_WRONLY|O_APPEND|O_SYNC);
+            //write(logFile, "\n\n", 2);
+        }
 
-        if (logFile == NULL) return -1;  // Error opening the file
+        if (logFile == -1) return -1;  // Error opening the file
     }
     
     return 0;
 }
 
-void setClock(clock_t clock) {
-    startClock = clock;
-}
-
-clock_t getClock() {return startClock;}
-
 int registerEvent(char * str) {
     // Verify if the file  or the string exist
-    if (logFile == NULL || str == NULL)
+    if (logFile == -1 || str == NULL)
         return 1;
     
     // Register instant and PID
@@ -77,9 +78,8 @@ int eventProcCreat(int argc, char * argv[]) {
 
     strcat(event, "\n");
 
-    fseek(logFile, 0, SEEK_END);
-    fwrite(event, sizeof(char), strlen(event), logFile);
-    fflush(logFile);  // Flush output buffer
+    lseek(logFile, 0, SEEK_END);
+    write(logFile, event, strlen(event));
 
     return 0;
 }
@@ -96,14 +96,13 @@ int eventProcExit(int exitStatus) {
     sprintf(exitStr, "%d\n", exitStatus);
     strcat(event, exitStr);
 
-    fseek(logFile, 0, SEEK_END);
-    fwrite(event, sizeof(char), strlen(event), logFile);
-    fflush(logFile);  // Flush output buffer
+    lseek(logFile, 0, SEEK_END);
+    write(logFile, event, strlen(event));
 
     return 0;
 }
 
-int eventSignalRecv(int signo){
+int eventSignalRecv(int signo) {
     char event[MAX_CHARS];
 
     if (registerEvent(event) == 1) return 1;
@@ -134,18 +133,17 @@ int eventSignalRecv(int signo){
 
     strcat(event, sign);
 
-    fseek(logFile, 0, SEEK_END);
-    fwrite(event, sizeof(char), strlen(event), logFile);
-    fflush(logFile);  // Flush output buffer
+    lseek(logFile, 0, SEEK_END);
+    write(logFile, event, strlen(event));
 
     return 0;
 }
 
-int eventSignalSent(int signo, pid_t targetPID){
+int eventSignalSent(int signo, pid_t targetPID) {
     char event[MAX_CHARS];
 
     if (registerEvent(event) == 1) return 1;
-    strcat(event, "SIGNAL_REC ; ");
+    strcat(event, "SIGNAL_ENV ; ");
 
     char sign[20];
     switch(signo){
@@ -167,17 +165,14 @@ int eventSignalSent(int signo, pid_t targetPID){
         case SIGUSR1:
         sprintf(sign, "SIGUSR1; %d\n", targetPID);
         break;
-
     }
 
     strcat(event, sign);
 
-    fseek(logFile, 0, SEEK_END);
-    fwrite(event, sizeof(char), strlen(event), logFile);
-    fflush(logFile);  // Flush output buffer
+    lseek(logFile, 0, SEEK_END);
+    write(logFile, event, strlen(event));
 
     return 0;
-
 }
 
 int eventFileModf(char * filename, mode_t oldMode, mode_t newMode) {
@@ -191,9 +186,8 @@ int eventFileModf(char * filename, mode_t oldMode, mode_t newMode) {
 
     strcat(event, str);
 
-    fseek(logFile, 0, SEEK_END);
-    fwrite(event, sizeof(char), strlen(event), logFile);
-    fflush(logFile);  // Flush output buffer
+    lseek(logFile, 0, SEEK_END);
+    write(logFile, event, strlen(event));
 
     return 0;
 }
@@ -201,9 +195,9 @@ int eventFileModf(char * filename, mode_t oldMode, mode_t newMode) {
 
 int endLogFile() {
     // Verify if the file exists
-    if(logFile == NULL)
+    if(logFile == -1)
         return 1;
 
-    fclose(logFile);
+    close(logFile);
     return 0;
 }
