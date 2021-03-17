@@ -65,8 +65,7 @@ int changePermissionRecursive(XmodInfo * xmodInfo, int argc, char * argv[]) {
         if (strcmp(files->d_name, ".") != 0 && strcmp(files->d_name, "..") != 0)
         {
             sprintf(path, "%s/%s", xmodInfo->filename, files->d_name);
-
-            if (stat(path, &buf) == -1) {
+            if (lstat(path, &buf) == -1) {
                 perror("stat()");
                 return 1;
             }
