@@ -41,10 +41,6 @@ int changePermission(XmodInfo * xmodInfo) {
 
 int changePermissionRecursive(XmodInfo * xmodInfo, int argc, char * argv[]) {
     filename = argv[argc-1];
-    // Para cada fich/pasta dentro da pasta:
-        // Alterar xmodInfo
-        // Se for pasta -> fazer fork() e execv("./xmod", argv);
-        // Senão, -> alterar xmodinfo changePermission
     
     nftot++;
     // Change file/dir permission
@@ -89,15 +85,16 @@ int changePermissionRecursive(XmodInfo * xmodInfo, int argc, char * argv[]) {
                     execv(argv[0], argv);
                     argv[argc - 1] = filecopy;
                 }
-                else {  // Father
+                else {  // Parent
                     childProcesses[numberOfChildren] = pid;
                     numberOfChildren++;
-                    //waitpid(pid, &status, 0);
                     nfmod++;
                 }
             }
-            else
-            {
+            else if (!S_ISLNK(buf.st_mode)) {
+                if (xmodInfo->flags.verbose) printf("neither symbolic link '%s' nor referent has been changed\n", path);
+            }
+            else {
                 copyXmodInfo(&subFile, xmodInfo);
                 subFile.filename = path;
                 subFile.oldMode = buf.st_mode;

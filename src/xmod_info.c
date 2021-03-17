@@ -5,15 +5,16 @@
 #include <sys/types.h>
 
 int fillXmodInfo(XmodInfo * xi, int argc, char * argv[]) {
-    // Verify if the file exists
-    if (checkFileStatus(argv[argc-1], xi) != 0) {
-        printf("xmod: cannot access '%s' : No such file or directory\nfailed to change mode of '%s' from 0000 (---------) to 0000 (---------)\n", argv[argc-1], argv[argc-1]);
-        return 1;
-    }
-
     // Fill flags/options
     if (fillXmodFlags(&(xi->flags), argc, argv) != 0) {
         printf("xmod: invalid options\n");
+        return 1;
+    }
+
+    // Verify if the file exists
+    if (checkFileStatus(argv[argc-1], xi) != 0) {
+        printf("xmod: cannot access '%s' : No such file or directory\n", argv[argc-1]);
+        if (xi->flags.verbose) printf("failed to change mode of '%s' from 0000 (---------) to 0000 (---------)\n", argv[argc-1]);
         return 1;
     }
 
