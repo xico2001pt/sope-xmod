@@ -29,6 +29,7 @@ clock_t getClock() {return startClock;}
 
 int initLogFile(int firstParent) {
     char* logFilename = getenv("LOG_FILENAME");
+    setenv("LOCK", "1", 1);
     
     if (logFilename == NULL) {  // The path to the filename doesn't exist
         logFile = -1;
@@ -49,6 +50,14 @@ int initLogFile(int firstParent) {
     return 0;
 }
 
+void hasWritePermission() {
+    int permission;
+    while (sscanf(getenv("LOCK"), "%d", &permission) && !permission);
+    setenv("LOCK", "0", 0);
+}
+
+void lockPermission() {setenv("LOCK", "1", 1);}
+
 int registerEvent(char * str) {
     // Verify if the file  or the string exist
     if (logFile == -1 || str == NULL)
@@ -64,6 +73,8 @@ int registerEvent(char * str) {
 }
 
 int eventProcCreat(int argc, char * argv[]) {
+    hasWritePermission();
+
     char event[MAX_CHARS];
 
     if (registerEvent(event) == 1) return 1;
@@ -81,10 +92,13 @@ int eventProcCreat(int argc, char * argv[]) {
     lseek(logFile, 0, SEEK_END);
     write(logFile, event, strlen(event));
 
+    lockPermission();
     return 0;
 }
 
 int eventProcExit(int exitStatus) {
+    hasWritePermission();
+
     char event[MAX_CHARS];
 
     if (registerEvent(event) == 1) return 1;
@@ -99,10 +113,13 @@ int eventProcExit(int exitStatus) {
     lseek(logFile, 0, SEEK_END);
     write(logFile, event, strlen(event));
 
+    lockPermission();
     return 0;
 }
 
 int eventSignalRecv(int signo) {
+    hasWritePermission();
+
     char event[MAX_CHARS];
 
     if (registerEvent(event) == 1) return 1;
@@ -136,10 +153,13 @@ int eventSignalRecv(int signo) {
     lseek(logFile, 0, SEEK_END);
     write(logFile, event, strlen(event));
 
+    lockPermission();
     return 0;
 }
 
 int eventSignalSent(int signo, pid_t targetPID) {
+    hasWritePermission();
+
     char event[MAX_CHARS];
 
     if (registerEvent(event) == 1) return 1;
@@ -172,10 +192,13 @@ int eventSignalSent(int signo, pid_t targetPID) {
     lseek(logFile, 0, SEEK_END);
     write(logFile, event, strlen(event));
 
+    lockPermission();
     return 0;
 }
 
 int eventFileModf(char * filename, mode_t oldMode, mode_t newMode) {
+    hasWritePermission();
+
     char event[MAX_CHARS];
 
     if (registerEvent(event) == 1) return 1;
@@ -189,6 +212,7 @@ int eventFileModf(char * filename, mode_t oldMode, mode_t newMode) {
     lseek(logFile, 0, SEEK_END);
     write(logFile, event, strlen(event));
 
+    lockPermission();
     return 0;
 }
 

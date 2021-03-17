@@ -19,11 +19,26 @@ void initClock();
 int initLogFile();
 
 /**
- * @brief Initializes the global variables
+ * @brief Initializes the global variable
  */
 void setClock(clock_t clock);
 
+/**
+ * @brief Get clock
+ * 
+ * @return clock_t Returns the clock
+ */
 clock_t getClock();
+
+/**
+ * @brief Checks if the process can write in the log_file and, if not, retains the process in there
+ */
+void hasWritePermission();
+
+/**
+ * @brief Locks the locker environmental variable
+ */
+void lockPermission();
 
 /**
  * @brief Function that register the starting info of any event(instant and pid)
