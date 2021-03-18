@@ -1,4 +1,4 @@
-#include "/xmod.h"
+#include "xmod.h"
 #include <string.h>
 #include <stdlib.h>
 #include <stdio.h>
@@ -8,10 +8,10 @@
 #include <fcntl.h>
 #include <unistd.h>
 #include <wait.h>
-#include "/change.h"
-#include "/regfile.h"
-#include "/xmod_info.h"
-#include "/signal.h"
+#include "change.h"
+#include "regfile.h"
+#include "xmod_info.h"
+#include "signal.h"
 
 int isFirstParent;
 

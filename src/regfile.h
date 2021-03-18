@@ -1,10 +1,12 @@
-#ifndef REGFILE_H
-#define REGFILE_H
+#ifndef SRC_REGFILE_H_
+#define SRC_REGFILE_H_
 
 #include <sys/types.h>
 #include <sys/times.h>
 
 #define EXIT(exitStatus) ({eventProcExit(exitStatus); endLogFile(); return exitStatus;})  // Register process termination and return
+
+#define MAX_CHARS 300 // Max number of file chars
 
 /**
  * @brief Initializes the clock
@@ -99,4 +101,4 @@ int eventFileModf(char * filename, mode_t oldMode, mode_t newMode);
  */
 int endLogFile();
 
-#endif // REGFILE_H
+#endif // SRC_REGFILE_H_

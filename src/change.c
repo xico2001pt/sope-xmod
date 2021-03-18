@@ -1,5 +1,4 @@
-#include "./change.h"
-#include "./regfile.h"
+#include "change.h"
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <stdio.h>
@@ -9,6 +8,7 @@
 #include <unistd.h>
 #include <sys/wait.h>
 #include "signal.h"
+#include "regfile.h"
 
 pid_t childProcesses[100];
 int numberOfChildren = 0;
@@ -59,41 +59,34 @@ int changePermissionRecursive(XmodInfo * xmodInfo, int argc, char * argv[]) {
 
 
     // Change permissions for each file/dir inside
-    while ((files = readdir(dp)) != NULL)
-    {
+    while ((files = readdir(dp)) != NULL) {
         //sleep(1);
-        if (strcmp(files->d_name, ".") != 0 && strcmp(files->d_name, "..") != 0)
-        {
+        if (strcmp(files->d_name, ".") != 0 && strcmp(files->d_name, "..") != 0) {
             sprintf(path, "%s/%s", xmodInfo->filename, files->d_name);
             if (lstat(path, &buf) == -1) {
                 perror("stat()");
                 return 1;
             }
             nftot++;
-            if (S_ISDIR(buf.st_mode))
-            {
+            if (S_ISDIR(buf.st_mode)) {
                 pid_t pid;
                 
                 if ((pid = fork()) < 0) {
                     perror("fork()");
                     return 1;
-                }
-                else if (pid == 0) {  // Child
+                } else if (pid == 0) {  // Child
                     char * filecopy = argv[argc - 1];
                     argv[argc - 1] = path;
                     execv(argv[0], argv);
                     argv[argc - 1] = filecopy;
-                }
-                else {  // Parent
+                } else {  // Parent
                     childProcesses[numberOfChildren] = pid;
                     numberOfChildren++;
                     nfmod++;
                 }
-            }
-            else if (S_ISLNK(buf.st_mode)) {
-                if (xmodInfo->flags.verbose) printf("neither symbolic link '%s' nor referent has been changed\n", path);
-            }
-            else {
+            } else if (S_ISLNK(buf.st_mode)) {
+                if (xmodInfo->flags.verbose){ printf("neither symbolic link '%s' nor referent has been changed\n", path);}
+            } else {
                 copyXmodInfo(&subFile, xmodInfo);
                 subFile.filename = path;
                 subFile.oldMode = buf.st_mode;
@@ -116,8 +109,7 @@ int initProcess() {
         sprintf(value, "%ld", getClock());
         setenv("XMOD_PARENT", value, 0);
         return 1;
-    }
-    else {
+    } else {
         clock_t clock;
         sscanf(buf, "%ld", &clock);
         setClock(clock);

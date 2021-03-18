@@ -1,13 +1,13 @@
 #include "signal.h"
-#include "change.h"
 #include <wait.h>
-#include "regfile.h"
 #include <string.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <unistd.h>
 #include <fcntl.h>
 #include "xmod.h"
+#include "change.h"
+#include "regfile.h"
 
 /**
  * 1º-> funções de reigisto de sinais
@@ -16,9 +16,9 @@
  * 
  */
 
-int signSIGINTAnwserHandler(char answer[]){
+int signSIGINTAnwserHandler(char answer[]) {
     //Se for igual a 1, vai mandar todos os procesos abortarem
-    if(answer[0] =='1'){
+    if(answer[0] =='1') {
         for(int i = 0; i<numberOfChildren; i++){
             kill(childProcesses[i], SIGUSR1);
             eventSignalSent(SIGUSR1, childProcesses[i]);
@@ -39,9 +39,7 @@ int signSIGINTAnwserHandler(char answer[]){
         raise(SIGKILL);     //Mato-me
         return 0; 
 
-    }
-
-    else if(answer[0] == '2'){
+    } else if(answer[0] == '2') {
         for(int i = 0; i<numberOfChildren; i++){
             eventSignalSent(SIGCONT, childProcesses[i]);
             kill(childProcesses[i], SIGCONT);
@@ -51,19 +49,23 @@ int signSIGINTAnwserHandler(char answer[]){
 
         return 0;
 
-    }
-
-    else{return -1;}
+    } else { return -1; }
 }
 
 
 
 void signSIGINTHandler(int signo){
+
+    if(filename == NULL){
+        pause();
+        return;
+    }
+    
     eventSignalRecv(SIGINT);
     //Escrever a mensagem
-    char buffer[50];
+    char buffer[100];
 
-    sprintf(buffer, "%d; %s; %d; %d\n", getpid(), filename, nftot, nfmod);
+    snprintf(buffer,sizeof(buffer),"%d; %s; %d; %d\n", getpid(), filename, nftot, nfmod);
     write(STDOUT_FILENO, buffer, strlen(buffer));
     
 

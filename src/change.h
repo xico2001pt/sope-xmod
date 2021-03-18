@@ -1,36 +1,36 @@
-#ifndef CHANGE_H
-#define CHANGE_H
+#ifndef SRC_CHANGE_H_
+#define SRC_CHANGE_H_
 
-#include "xmod_info.h"
 #include <sys/types.h>
 #include <unistd.h>
+#include "xmod_info.h"
 
 /**
- * @brief Nº de ficheiros encontrados até ao momento
+ * @brief Nº de ficheiros encontrados
  * 
  */
 extern int nftot;
 
 /**
- * @brief Nº de ficheiros modificados até ao momento
+ * @brief Number of files changed
  * 
  */
 extern int nfmod;
 
 /**
- * @brief Diretório do ficheiro ou da pasta
+ * @brief Main folder address
  * 
  */
 extern char* filename;
 
 /**
- * @brief Array com o pid de cada filho do processo
+ * @brief Array with the pid of the child processes
  * 
  */
 extern pid_t childProcesses[100];
 
 /**
- * @brief Tamanho do array childProcesses
+ * @brief Size of the childProcesses array
  * 
  */
 extern int numberOfChildren;
@@ -43,11 +43,12 @@ extern int numberOfChildren;
  */
 int changePermission(XmodInfo * xmodInfo);
 
-// TODO: alterar
 /**
- * @brief Changes the permission of the file/dir based on the new permissions
+ * @brief Changes the permission of the folder and its files when its running in recursive mode
  * 
  * @param xmodInfo Struct containing all the info about permission changes
+ * @param argc Number of arguments passed
+ * @param argv Arguments passed when calling xmod
  * @return int Returns 1 if not success and 0 if success
  */
 int changePermissionRecursive(XmodInfo * xmodInfo, int argc, char * argv[]);
@@ -70,4 +71,4 @@ int octalModeToString(mode_t mode, char *buf);
  */
 int initProcess();
 
-#endif // CHANGE_H
+#endif // SRC_CHANGE_H_
