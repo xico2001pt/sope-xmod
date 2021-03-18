@@ -1,6 +1,4 @@
-#include "change.h"
-#include "regfile.h"
-#include "xmod_info.h"
+#include "/xmod.h"
 #include <string.h>
 #include <stdlib.h>
 #include <stdio.h>
@@ -8,18 +6,21 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
-#include "xmod.h"
 #include <unistd.h>
 #include <wait.h>
-#include "signal.h"
+#include "/change.h"
+#include "/regfile.h"
+#include "/xmod_info.h"
+#include "/signal.h"
 
-int isFirstParent=1;
+int isFirstParent;
 
 int main(int argc, char * argv[]) {
     
     initClock();  // Initialize start clock
-    isFirstParent = initProcess();  // Determinar se isParent
+    isFirstParent = initProcess();  // Determine if isParent
 
+    // Initialize signal handlers
     signal(SIGINT, signSIGINTHandler);
     signal(SIGCONT, sighandlerSIGCONT);
     signal(SIGCHLD, sigHandlerSIGCHILD);
@@ -38,19 +39,15 @@ int main(int argc, char * argv[]) {
     XmodInfo xmodInfo;
     if (fillXmodInfo(&xmodInfo, argc, argv) != 0) EXIT(1);
 
+    // Change FILE/DIR permissions
     if (xmodInfo.flags.recursive) {
         if (changePermissionRecursive(&xmodInfo, argc, argv) != 0) EXIT(2);
-    }
-    else {
+    } else {
         if (changePermission(&xmodInfo) != 0) EXIT(2);
     }
-    
 
-    //Se não for pai, envia o SIGCHLD ao pai
-    if(!isFirstParent){
-        
-        eventSignalSent(SIGCHLD, getppid());
-    }
+    // If not isParent, send SIGCHLD to parent
+    if (!isFirstParent) eventSignalSent(SIGCHLD, getppid());
     
     EXIT(0);
 }

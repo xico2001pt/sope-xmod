@@ -1,5 +1,5 @@
-#ifndef XMOD_H
-#define XMOD_H
+#ifndef SRC_XMOD_H_
+#define SRC_XMOD_H_
 
 /**
  * @brief Variável que diz se é o processo pai ou não
@@ -7,4 +7,4 @@
  */
 extern int isFirstParent;
 
-#endif //XMOD_H
+#endif // SRC_XMOD_H_
