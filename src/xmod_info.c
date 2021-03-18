@@ -1,4 +1,4 @@
-#include "xmod_info.h"
+#include "/xmod_info.h"
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
@@ -50,13 +50,11 @@ int fillXmodFlags(XmodFlags * xf, int argc, char * argv[]) {
             if (xf->recursive)
                 return 1;
             xf->recursive = true;
-        }
-        else if (strcmp(argv[i], "-v") == 0) {
+        } else if (strcmp(argv[i], "-v") == 0) {
             if (xf->verbose)
                 return 1;
             xf->verbose = true;
-        }
-        else if (strcmp(argv[i], "-c") == 0) {
+        } else if (strcmp(argv[i], "-c") == 0) {
             if (xf->changes)
                 return 1;
             xf->changes = true;
@@ -135,9 +133,9 @@ int checkRegularMode(char* mode) {
 
 
 mode_t convertToOctal(char * mode, char * filename, mode_t oldMode) {
-    if (checkOctal(mode) == 0)  // Check if string is in octal mode
+    if (checkOctal(mode) == 0) {  // Check if string is in octal mode
         return strtol(mode, NULL, 8);
-    else if (checkRegularMode(mode) == 0) {  // Check if string is in regular mode
+    } else if (checkRegularMode(mode) == 0) {  // Check if string is in regular mode
         // Initialize variable
         mode_t octalMode = 0;
 
@@ -150,16 +148,14 @@ mode_t convertToOctal(char * mode, char * filename, mode_t oldMode) {
                     octalMode |= S_IRGRP;   // Read permission for user group
                 if (mode[0] == 'o' || mode[0] == 'a')
                     octalMode |= S_IROTH;   // Read permission for other users
-            }
-            else if (mode[i] == 'w') {
+            } else if (mode[i] == 'w') {
                 if (mode[0] == 'u' || mode[0] == 'a')
                     octalMode |= S_IWUSR;   // Write permission for user
                 if (mode[0] == 'g' || mode[0] == 'a')
                     octalMode |= S_IWGRP;   // Write permission for user group
                 if (mode[0] == 'o' || mode[0] == 'a')
                     octalMode |= S_IWOTH;   // Write permission for other users
-            }
-            else if (mode[i] == 'x') {
+            } else if (mode[i] == 'x') {
                 if (mode[0] == 'u' || mode[0] == 'a')
                     octalMode |= S_IXUSR;   // Execution permission for user
                 if (mode[0] == 'g' || mode[0] == 'a')
@@ -175,8 +171,7 @@ mode_t convertToOctal(char * mode, char * filename, mode_t oldMode) {
         // Merge given permission with file permission
         if (mode[1] == '+') {
             octalMode |= oldMode;
-        }
-        else if (mode[1] == '-') {
+        } else if (mode[1] == '-') {
             octalMode = ~octalMode & oldMode;
         }
         return octalMode;

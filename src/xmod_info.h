@@ -1,5 +1,5 @@
-#ifndef XMOD_INFO_H
-#define XMOD_INFO_H
+#ifndef SRC_XMOD_INFO_H_
+#define SRC_XMOD_INFO_H_
 
 #include <sys/stat.h>
 #include <stdbool.h>
@@ -99,4 +99,4 @@ mode_t convertToOctal(char * mode, char * filename, mode_t oldMode);
  */
 int compareModes(mode_t mode1, mode_t mode2);
 
-#endif // XMOD_INFO_H
+#endif // SRC_XMOD_INFO_H_
