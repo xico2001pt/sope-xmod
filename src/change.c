@@ -28,6 +28,7 @@ int changePermission(XmodInfo * xmodInfo) {
         return 1;
     }
     
+
     // Register event
     eventFileModf(xmodInfo->filename, xmodInfo->oldMode, xmodInfo->mode);
 
@@ -75,10 +76,11 @@ int changePermissionRecursive(XmodInfo * xmodInfo, int argc, char * argv[]) {
                     perror("fork()");
                     return 1;
                 } else if (pid == 0) {  // Child
-                    char * filecopy = argv[argc - 1];
+                    //char * filecopy = argv[argc - 1];
                     argv[argc - 1] = path;
                     execv(argv[0], argv);
-                    argv[argc - 1] = filecopy;
+                    //argv[argc - 1] = filecopy;
+                    return 0;
                 } else {  // Parent
                     childProcesses[numberOfChildren] = pid;
                     numberOfChildren++;
