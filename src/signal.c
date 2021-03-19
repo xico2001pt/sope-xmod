@@ -71,8 +71,7 @@ void signSIGINTHandler(int signo) {
             write(STDOUT_FILENO,"Please insert '1' to stop or '2' to continue! ", 47);
             read(STDIN_FILENO, input, 2);
         }
-    }
-    else {
+    } else {
         // Children pause and registers the event
         eventSignalSent(SIGSTOP, getpid());
         eventSignalRecv(SIGSTOP);
