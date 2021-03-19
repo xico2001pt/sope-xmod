@@ -5,9 +5,9 @@
 #include <stdio.h>
 #include <unistd.h>
 #include <fcntl.h>
-#include "xmod.h"
-#include "change.h"
-#include "regfile.h"
+#include "./xmod.h"
+#include "./change.h"
+#include "./regfile.h"
 
 /**
  * 1º-> funções de reigisto de sinais
@@ -54,45 +54,37 @@ int signSIGINTAnwserHandler(char answer[]) {
 
 
 
-void signSIGINTHandler(int signo){
-
-    if(filename == NULL){
+void signSIGINTHandler(int signo) {
+    if (filename == NULL) {
         pause();
         return;
     }
-    
+
+    // Registers the signal
     eventSignalRecv(SIGINT);
-    //Escrever a mensagem
+
+    // Writing the pid; directory_name; number_of_files_found; number_of_files_modified
     char buffer[100];
-
-    snprintf(buffer,sizeof(buffer),"%d; %s; %d; %d\n", getpid(), filename, nftot, nfmod);
+    snprintf(buffer, sizeof(buffer), "\n%d; %s; %d; %d", getpid(), filename, nftot, nfmod);
     write(STDOUT_FILENO, buffer, strlen(buffer));
-    
 
-    //Se for pai:
     if (isFirstParent) {
-        //Maneira de esperar que os filhos escrevam tudo
-        sleep(5);
-        char input[1];
+        sleep(1);  // Waiting for the children to write the messages
 
+        char input[3];
+        write(STDOUT_FILENO,"\nDo you want to stop the program(1) or do you prefer to continue(2)? ", 70);
+        read(STDIN_FILENO, input, 2);
 
-        write(STDOUT_FILENO,"Do you want to stop the program(1) or do you prefer to continue(2)?\t", 69);
-    mauInput:
-        read(STDIN_FILENO, input, 1);
-        if(signSIGINTAnwserHandler(input)==-1){
-            write(STDOUT_FILENO,"Please insert '1' to stop or '2' to continue!\t", 47);
-            goto mauInput;
+        while (signSIGINTAnwserHandler(input) == -1) {
+            write(STDOUT_FILENO,"Please insert '1' to stop or '2' to continue! ", 47);
+            read(STDIN_FILENO, input, 2);
         }
-
-        
-    }
-    else
-    {
-        //senão entra em pausa
+    } else {
+        // Children pause and registers the event
         eventSignalSent(SIGSTOP, getpid());
         eventSignalRecv(SIGSTOP);
         pause();
-    }   
+    }
 }
 
 
@@ -121,9 +113,6 @@ void sigHandlerSIGUSR1(int signo){
     eventSignalSent(SIGCHLD, getppid());    //Aviso o paizinho que me vou matar
     eventProcExit(0);
     raise(SIGKILL);
-    
-    
-    
 }
 
 void sigHandlerSIGCHILD(int signo){

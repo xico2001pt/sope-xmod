@@ -33,16 +33,6 @@ void setClock(clock_t clock);
 clock_t getClock();
 
 /**
- * @brief Checks if the process can write in the log_file and, if not, retains the process in there
- */
-void hasWritePermission();
-
-/**
- * @brief Locks the locker environmental variable
- */
-void lockPermission();
-
-/**
  * @brief Function that register the starting info of any event(instant and pid)
  * 
  * @param str String that will receive the event text

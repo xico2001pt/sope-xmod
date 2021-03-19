@@ -18,7 +18,7 @@ char* filename;
 
 int changePermission(XmodInfo * xmodInfo) {
     // Convert octal permissions to string
-    char oldMode[10], newMode[10];
+    char oldMode[BUF_SIZE], newMode[BUF_SIZE];
     octalModeToString(xmodInfo->oldMode, oldMode);
     octalModeToString(xmodInfo->mode, newMode);
 
@@ -62,7 +62,7 @@ int changePermissionRecursive(XmodInfo * xmodInfo, int argc, char * argv[]) {
     while ((files = readdir(dp)) != NULL) {
         //sleep(1);
         if (strcmp(files->d_name, ".") != 0 && strcmp(files->d_name, "..") != 0) {
-            sprintf(path, "%s/%s", xmodInfo->filename, files->d_name);
+            snprintf(path, sizeof(path), "%s/%s", xmodInfo->filename, files->d_name);
             if (lstat(path, &buf) == -1) {
                 perror("stat()");
                 return 1;
@@ -103,10 +103,10 @@ int changePermissionRecursive(XmodInfo * xmodInfo, int argc, char * argv[]) {
 }
 
 int initProcess() {
-    char *buf, value[50];
+    char *buf, value[MAX_CHARS];
 
     if ((buf = getenv("XMOD_PARENT")) == NULL) {
-        sprintf(value, "%ld", getClock());
+        snprintf(value, MAX_CHARS, "%ld", getClock());
         setenv("XMOD_PARENT", value, 0);
         return 1;
     } else {
@@ -117,11 +117,11 @@ int initProcess() {
     }
 }
 
-int octalModeToString(mode_t mode, char *buf) {
+int octalModeToString(mode_t mode, char * buf) {
     // Check if space was allocated
     if (buf == NULL) return 1;
 
-    strcpy(buf, "rwxrwxrwx");
+    snprintf(buf, BUF_SIZE, "rwxrwxrwx");
 
     int temp, i = 8;
     while (i != -1){

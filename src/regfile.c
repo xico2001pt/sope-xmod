@@ -5,7 +5,7 @@
 #include <string.h>
 #include <fcntl.h>
 #include <time.h>
-#include "signal.h"
+#include "./signal.h"
 
 /**
  * @brief LOG_FILENAME number if it exists, -1 if it doesnt
@@ -26,7 +26,7 @@ clock_t getClock() {return startClock;}
 
 int initLogFile(int firstParent) {
     char* logFilename = getenv("LOG_FILENAME");
-    setenv("LOCK", "1", 1);
+    
     
     if (logFilename == NULL) {  // The path to the filename doesn't exist
         logFile = -1;
@@ -34,26 +34,14 @@ int initLogFile(int firstParent) {
     } else {
         // Flags -> Write only, create file if doesn't exist and truncate if it does
         // Permissions -> Read and write for all users
-        if (firstParent) {
-            logFile = open(logFilename, O_WRONLY|O_CREAT|O_TRUNC|O_SYNC, S_IRGRP|S_IRUSR|S_IROTH|S_IWGRP|S_IWOTH|S_IWUSR);
-        } else {
-            logFile = open(logFilename, O_WRONLY|O_APPEND|O_SYNC);
-            //write(logFile, "\n\n", 2);
-        }
+        if (firstParent) logFile = open(logFilename, O_WRONLY|O_CREAT|O_TRUNC|O_SYNC|O_APPEND, S_IRGRP|S_IRUSR|S_IROTH|S_IWGRP|S_IWOTH|S_IWUSR);
+        else logFile = open(logFilename, O_WRONLY|O_APPEND|O_SYNC);
 
         if (logFile == -1) return -1;  // Error opening the file
     }
     
     return 0;
 }
-
-void hasWritePermission() {
-    int permission;
-    while (sscanf(getenv("LOCK"), "%d", &permission) && !permission);
-    setenv("LOCK", "0", 0);
-}
-
-void lockPermission() {setenv("LOCK", "1", 1);}
 
 int registerEvent(char *str) {
     // Verify if the file  or the string exist
@@ -70,48 +58,38 @@ int registerEvent(char *str) {
 }
 
 int eventProcCreat(int argc, char * argv[]) {
-    hasWritePermission();
-
     char event[MAX_CHARS];
 
     if (registerEvent(event) == 1) return 1;
-    snprintf(event, sizeof(event), "%sPROC_CREAT ; ", event); // After inst; pid; write event ;
+    snprintf(event + strlen(event), MAX_CHARS, "PROC_CREAT ; "); // After inst; pid; write event ;
 
     // After inst ; pid ; event ; write arg[1] arg[2] arg[3] ...
-    for (int i = 0; i < argc; i++) {
-        snprintf(event, sizeof(event), "%s%s ", event, argv[i]);
-    }
-    snprintf(event, sizeof(event), "%s\n",event);
+    for (int i = 0; i < argc; i++)
+        snprintf(event + strlen(event), MAX_CHARS, "%s ", argv[i]);
+
+    snprintf(event + strlen(event), MAX_CHARS, "\n");
     
-    lseek(logFile, 0, SEEK_END);
     write(logFile, event, strlen(event));
 
-    lockPermission();
     return 0;
 }
 
 int eventProcExit(int exitStatus) {
-    hasWritePermission();
-
     char event[MAX_CHARS];
 
     if (registerEvent(event) == 1) return 1;
-    snprintf(event, sizeof(event), "%sPROC_EXIT ; %d\n", event, exitStatus);  // After inst; pid; write event ; Write exit status
+    snprintf(event + strlen(event), MAX_CHARS, "PROC_EXIT ; %d\n", exitStatus);  // After inst; pid; write event ; Write exit status
 
-    lseek(logFile, 0, SEEK_END);
     write(logFile, event, strlen(event));
 
-    lockPermission();
     return 0;
 }
 
 int eventSignalRecv(int signo) {
-    hasWritePermission();
-
     char event[MAX_CHARS];
 
     if (registerEvent(event) == 1) return 1;
-    snprintf(event, sizeof(event), "%sSIGNAL_REC ; ", event);
+    snprintf(event + strlen(event), MAX_CHARS, "SIGNAL_REC ; ");
 
     char sign[20];
     switch(signo){
@@ -135,22 +113,18 @@ int eventSignalRecv(int signo) {
         break;
     }
     
-    snprintf(event, sizeof(event), "%s%s", event, sign);
+    snprintf(event + strlen(event), MAX_CHARS, "%s", sign);
 
-    lseek(logFile, 0, SEEK_END);
     write(logFile, event, strlen(event));
-
-    lockPermission();
+   
     return 0;
 }
 
 int eventSignalSent(int signo, pid_t targetPID) {
-    hasWritePermission();
-
     char event[MAX_CHARS];
 
     if (registerEvent(event) == 1) return 1;
-    snprintf(event, sizeof(event), "%sSIGNAL_ENV ; ", event);
+    snprintf(event + strlen(event), MAX_CHARS, "SIGNAL_ENV ; ");
 
     char sign[20];
     switch(signo){
@@ -174,29 +148,24 @@ int eventSignalSent(int signo, pid_t targetPID) {
         break;
     }
 
-    snprintf(event, sizeof(event), "%s%s",event, sign);
+    snprintf(event + strlen(event), MAX_CHARS, "%s", sign);
 
-    lseek(logFile, 0, SEEK_END);
     write(logFile, event, strlen(event));
 
-    lockPermission();
     return 0;
 }
 
 int eventFileModf(char * filename, mode_t oldMode, mode_t newMode) {
-    hasWritePermission();
-
     char event[MAX_CHARS];
 
     if (registerEvent(event) == 1) return 1;
 
     // Write event ; filename : oldMode : newMode
-    snprintf(event, sizeof(event), "%sFILE_MODF ; %s : %#o : %#o\n", event, filename, oldMode & 0777, newMode & 0777);
+    snprintf(event + strlen(event), MAX_CHARS, "FILE_MODF ; %s : %#o : %#o\n", filename, oldMode & 0777, newMode & 0777);
 
-    lseek(logFile, 0, SEEK_END);
+    //lseek(logFile, 0, SEEK_END);
     write(logFile, event, strlen(event));
-
-    lockPermission();
+    
     return 0;
 }
 

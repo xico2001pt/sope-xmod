@@ -5,6 +5,8 @@
 #include <unistd.h>
 #include "xmod_info.h"
 
+#define BUF_SIZE 10 // Max number of file chars in buf
+
 /**
  * @brief Nº de ficheiros encontrados
  * 

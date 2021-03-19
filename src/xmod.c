@@ -11,7 +11,7 @@
 #include "change.h"
 #include "regfile.h"
 #include "xmod_info.h"
-#include "signal.h"
+#include "./signal.h"
 
 int isFirstParent;
 
